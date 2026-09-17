@@ -1,8 +1,11 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { toLedgerEntry } from "@/lib/ledger/mapping";
+import { buildSummary } from "@/lib/summary";
 import { DashboardHeader } from "./dashboard-header";
 import { TutorialOverlay } from "./tutorial-overlay";
+import { OverviewView } from "./overview-view";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -12,25 +15,19 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  const { data: settings } = await supabase
-    .from("Settings")
-    .select("*")
-    .eq("userId", user.id)
-    .maybeSingle();
+  const [{ data: settings }, { data: entries }, { data: categories }] = await Promise.all([
+    supabase.from("Settings").select("*").eq("userId", user.id).maybeSingle(),
+    supabase
+      .from("Entry")
+      .select("id,amountCents,date,note,source,category:Category(id,name,type)")
+      .eq("userId", user.id),
+    supabase.from("Category").select("name").eq("userId", user.id),
+  ]);
 
   if (!settings) redirect("/dashboard/onboarding");
 
-  const { count: entryCount } = await supabase
-    .from("Entry")
-    .select("id", { count: "exact", head: true })
-    .eq("userId", user.id);
-
-  const { data: categories } = await supabase
-    .from("Category")
-    .select("name")
-    .eq("userId", user.id);
-
-  const empty = (entryCount ?? 0) === 0;
+  const rows = entries ?? [];
+  const empty = rows.length === 0;
   const categoryCount = categories?.length ?? 0;
   const activePreset = settings.activePreset ?? "Custom";
 
@@ -38,7 +35,7 @@ export default async function DashboardPage() {
     <main className="min-h-screen bg-gray-50">
       <DashboardHeader email={user.email ?? ""} />
 
-      <section className="mx-auto max-w-3xl px-6 py-10">
+      <section className="mx-auto max-w-5xl px-6 py-10">
         {empty ? (
           <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-2xl">
@@ -60,16 +57,14 @@ export default async function DashboardPage() {
             </p>
           </div>
         ) : (
-          <div className="rounded-2xl border bg-white px-6 py-10 shadow-sm">
-            <p className="text-sm text-gray-600">
-              {entryCount} entr{entryCount === 1 ? "y" : "ies"} · {categoryCount}{" "}
-              categor{categoryCount === 1 ? "y" : "ies"}
-            </p>
-            <p className="mt-2 text-sm text-gray-400">
-              The full Overview — net position, money in/out, and tax set-aside —
-              lands in the next phase.
-            </p>
-          </div>
+          <OverviewView
+            initial={buildSummary(
+              rows.map(toLedgerEntry),
+              "month",
+              settings.taxRate ?? 23,
+              settings.currencyDisplay ?? "USD",
+            )}
+          />
         )}
       </section>
 

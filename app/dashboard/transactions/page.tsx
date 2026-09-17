@@ -1,21 +1,17 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { embedToCategory } from "@/lib/ledger/mapping";
 import { DashboardHeader } from "../dashboard-header";
 import { TransactionsView } from "./transactions-view";
 import type { EntryRow, CategoryOption } from "./types";
 
-interface RawEntryRow extends Omit<EntryRow, "category"> {
-  category:
-    | { id: string; name: string; type: "IN" | "OUT" }
-    | { id: string; name: string; type: "IN" | "OUT" }[]
-    | null;
-}
-
-function embedToCategory(
-  embed: RawEntryRow["category"],
-): { id: string; name: string; type: "IN" | "OUT" } | null {
-  if (!embed) return null;
-  return Array.isArray(embed) ? (embed[0] ?? null) : embed;
+interface RawEntryRow {
+  id: string;
+  amountCents: number;
+  date: string;
+  note: string | null;
+  source: string | null;
+  category?: unknown;
 }
 
 export default async function TransactionsPage() {
@@ -42,7 +38,7 @@ export default async function TransactionsPage() {
     date: e.date,
     note: e.note,
     source: e.source,
-    category: embedToCategory(e.category as RawEntryRow["category"]),
+    category: embedToCategory(e.category),
   }));
 
   return (

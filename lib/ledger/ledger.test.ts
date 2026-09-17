@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { LedgerEntry } from "./types.ts";
-import { computeTotals, computeTaxSetAside, groupByCategory, trendSeries } from "./ledger.ts";
+import { computeTotals, computeTaxSetAside, groupByCategory, trendSeries, filterByPeriod } from "./ledger.ts";
 
 function e(
   amountCents: number,
@@ -137,4 +137,29 @@ test("trendSeries: an empty month is a zero point; out-of-window entries are ign
 
 test("trendSeries: months=0 yields an empty series", () => {
   assert.deepEqual(trendSeries(FIXTURES, 0, FIXED_NOW), []);
+});
+
+test("filterByPeriod: month keeps only the current calendar month", () => {
+  const filtered = filterByPeriod(FIXTURES, "month", FIXED_NOW);
+  assert.deepEqual(filtered.map((x) => x.date), ["2026-01-02", "2026-01-04", "2026-01-15"]);
+});
+
+test("filterByPeriod: quarter keeps the current quarter (Jan-Feb)", () => {
+  const filtered = filterByPeriod(FIXTURES, "quarter", FIXED_NOW);
+  assert.deepEqual(
+    filtered.map((x) => x.date),
+    ["2026-01-02", "2026-01-04", "2026-01-15", "2026-02-01", "2026-02-03"],
+  );
+});
+
+test("filterByPeriod: year keeps only the current year", () => {
+  const filtered = filterByPeriod(FIXTURES, "year", FIXED_NOW);
+  assert.equal(filtered.length, 5);
+  assert.ok(filtered.every((x) => x.date.startsWith("2026-")));
+});
+
+test("filterByPeriod: all keeps everything and preserves order", () => {
+  const filtered = filterByPeriod(FIXTURES, "all", FIXED_NOW);
+  assert.equal(filtered.length, FIXTURES.length);
+  assert.deepEqual(filtered.map((x) => x.date), FIXTURES.map((x) => x.date));
 });

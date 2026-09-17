@@ -21,6 +21,14 @@ function isWithinPeriod(date: string, period: Period, now: Date): boolean {
   }
 }
 
+export function filterByPeriod(
+  entries: LedgerEntry[],
+  period: Period,
+  now: Date = new Date(),
+): LedgerEntry[] {
+  return entries.filter((entry) => isWithinPeriod(entry.date, period, now));
+}
+
 export function computeTotals(
   entries: LedgerEntry[],
   period: Period = "all",

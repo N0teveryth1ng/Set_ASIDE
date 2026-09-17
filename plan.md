@@ -1,124 +1,128 @@
-# Creator Ledger — Project Plan
+# Set-Aside — Phased Build Plan
 
-The whole idea, the problem, and the plan to cut the spreadsheet.
-
----
-
-## 1. The Concept
-
-**Creator Ledger is the self-contained financial cockpit for solo content creators.**
-
-It is a single, hyper-minimalist dashboard where a creator pastes their business
-in plain language — a brand deal, a payout, a camera cost, a software fee — and
-the system does the accounting: it reads the line, classifies it, updates five
-live metrics, tucks away a tax escrow automatically, and keeps everything saved
-locally across sessions.
-
-No sign-up, no backend, no CSV exports, no formulas to maintain. Type a note,
-hit Commit, get a clean board of numbers. That is the entire product.
+Authoritative roadmap. Every phase has a fixed scope, an explicit acceptance
+test, and a delete list — files/features that must be removed, not just
+superseded. That last part is the discipline the old repo never had, and it's
+non-negotiable this time. No phase closes with old and new UI both live.
 
 ---
 
-## 2. The Problem
+## Phase 0 — Clean slate
 
-### 2.1 Who we serve
+**Goal:** stop building on top of rot.
 
-Non-technical solo businesses: Instagram/TikTok/Threads creators, UGC artists,
-freelance consultants. People whose *work* is producing content, whose *income*
-is deal-based and lumpy, and who have zero interest in bookkeeping.
+- **Delete:** `app/page.tsx` content, `app/dashboard/page.tsx` content,
+  `agents.md`, `progress.md`, `utilities/navConfig.ts`, all shadcn components
+  pulled ad hoc so far.
+- Rewrite `package.json` name to `set-aside`.
+- New `prd.md` (one page, zero CSS classes in it) and `arch.md` (layers +
+  contracts only) reflecting everything locked above. `decisions.md` kept but
+  pruned to decisions that still bind.
+- Init Supabase project (Postgres + Auth). Init Prisma, pointed at Supabase's
+  connection string.
+- **Acceptance:** repo builds, renders a blank Next.js app, zero references to
+  Google Sheets anywhere in code or copy.
 
-### 2.2 What hurts them today
+## Phase 1 — Data model & domain layer
 
-| Pain | Description |
-|------|-------------|
-| **Manual chaos** | Deals, payouts, and costs are scattered across DMs, emails, and notes. By the time revenue is needed, the trail is gone. |
-| **Broken formulas** | The people who do try spreadsheets copy templates they do not understand; one broken formula silently corrupts the whole year. |
-| **Ugly corporate layouts** | Every accounting tool looks like an enterprise ERP. Nothing says "made for a creator." |
-| **No tax readiness** | Revenue lands, nobody sets aside the tax cut, and the end of the year is a panic of catching up. |
-| **Spreadsheet terror** | Google Sheets files get duplicated, shared, edited wrong, and lost. They are documents, not a system. |
+**Goal:** the schema and logic exist and are tested, before any UI touches them.
 
-### 2.3 The core insight
+- Prisma schema: `User`, `Category` (name, type: IN/OUT, user-owned, seeded per
+  preset), `Entry` (amount as integer cents, direction derived from
+  category.type, date, note, source: manual/import, created_at), `Preset` enum,
+  `Settings` (tax rate, active preset, currency display).
+- `lib/ledger/`: pure functions — `computeTotals(entries, period)`,
+  `computeTaxSetAside(entries, rate)`, `groupByCategory(entries)`,
+  `trendSeries(entries, months)`. All pure, all unit-testable, zero React.
+- Seed script: 4 presets, each with a default category set.
+- **Delete list:** any leftover `parseTransaction`/`computeLedger`/`localStorage`
+  code from the old build.
+- **Acceptance:** unit tests pass on the domain functions with hand-built
+  fixture data (including a loss month, to confirm negative Net Position
+  computes correctly).
 
-Creators do not need *accounting software* — they need **an inbox that does arithmetic**.
-The friction is not the math. The friction is *input*. If entering a transaction is
-as easy as writing a note to yourself, the ledger fills itself and stays honest.
+## Phase 2 — Auth
 
----
+**Goal:** real accounts, before there's anything worth protecting.
 
-## 3. What We Are Actually Building (MVP so far)
+- Supabase Auth: Google OAuth + magic link email.
+- Session handling via Supabase's Next.js helpers; row-level ownership
+  (user_id on every table, RLS policies in Supabase).
+- Minimal `/login` page, protected `/dashboard/*` routes.
+- **Acceptance:** a new user can sign up with Google or email, lands in an empty
+  account, cannot see another user's data even by guessing an ID.
 
-A two-route Next.js application:
+## Phase 3 — Onboarding
 
-- **Landing (`/`)** — the funnel: pitch, pain points, features, and a one-click
-  hand-off into the workspace.
-- **Dashboard (`/dashboard`)** — the engine:
+**Goal:** zero-config start via the preset system.
 
-  - a **natural-language text parser** — `parseTransaction` reads a line like
-    `Brand payout $3,000` or `Camera cost 800`, extracts the amount, and
-    classifies it REVENUE or EXPENSE automatically;
-  - a **batch commit loop** — paste several lines at once; every non-empty line
-    is parsed and appended in a single sweep;
-  - a **global tax escrow** — one number (`default 23%`) applied to all revenue,
-    giving an instant "set aside" figure;
-  - **five live metrics** — Total Revenue, Total Expenses, Net Profit, Tax
-    Escrow Allocation, Brand Deal Net ROI — recomputed on every change;
-  - a **historical diagnostics ledger** — every parsed entry as an audit row
-    with a `[Delete]` trigger for instant correction;
-  - **local-first persistence** — the whole state survives reloads via
-    `localStorage` (`creator_ledger_v2_state`), zero servers.
+- First-login flow: preset picker (Freelance / Business / Personal / Creator) →
+  seeds that user's categories.
+- Step-by-step tutorial overlay (Skip/Next cards) over the Overview screen,
+  shown once, dismissible, stored as `settings.onboarded = true`.
+- **Acceptance:** new signup → preset choice → tutorial → lands on Overview
+  showing the deliberate empty state (not zeros everywhere — an explicit
+  "add your first entry or import a file" prompt).
 
-The interface is an enterprise-grade shadcn/ui slate chassis: clinical mono
-labels, dense bold metrics, razor hairline grids — a tool that feels as serious
-as the work.
+## Phase 4 — Manual entry & Transactions page
 
----
+**Goal:** the core loop works without needing import at all.
 
-## 4. The Plan: Ditching the Excel-Type Thing
+- `/dashboard/transactions`: table (shadcn data table), add-entry form with the
+  locked validation rules (positive amount, category-derived sign, required
+  date/category, "Uncategorized" fallback), inline edit, delete.
+- API routes: `GET/POST /api/entries`, `PATCH/DELETE /api/entries/:id`.
+- **Acceptance:** can add, edit, delete an entry; a loss-producing set of entries
+  correctly shows negative totals downstream (tested against Phase 1's domain
+  functions, not reimplemented here).
 
-### 4.1 Why we are cutting the spreadsheet
+## Phase 5 — Overview dashboard
 
-The original incarnation sold a **Google Sheets template** — "the product is the
-sheet; the page is the funnel." The sheet experiment taught us exactly what
-needed to be built next:
+**Goal:** the actual product surface, built to the locked spec, once.
 
-1. **Sheets are not a product** — they are a shared document. There is no
-   versioning sanity, no structured input, no enforcement of correctness.
-2. **They leak users** — every click-to-copy sends a creator out of our
-   experience onto a foreign tool where the magic dies.
-3. **They cannot own the interaction** — no live parsing, no custom UI, no
-   delete-with-a-button, no design language.
-4. **They are a dead end for the brand** — a premium product cannot live inside
-   a commodity spreadsheet.
+- `/dashboard`: hero Net Position + sparkline + period switcher, Money In/Out
+  pair, Tax set-aside card, category breakdown list, trend chart.
+- Green/red/gray convention applied everywhere a signed number appears.
+- `GET /api/summary?period=` backs all of this — computed server-side using
+  Phase 1 functions, not recalculated ad hoc in a component.
+- **Delete list:** confirm zero leftover debug readouts
+  (`<div>Total Revenue: {totals...}</div>` style) anywhere in the tree.
+- **Acceptance:** dashboard reflects live entries from Phase 4 correctly across
+  all four period views.
 
-So the strategic pivot: **the sheet is retired as the deliverable.** It becomes
-data. What we ship is the web app that *replaces* it.
+## Phase 6 — Import
 
-### 4.2 The migration plan (in sequence)
+**Goal:** the one-way door in, done right.
 
-| Phase | Move | Outcome |
-|-------|------|---------|
-| **1** | Cut the template as the pitch — the dashboard IS the product | Product owns the full experience; no click-to-copy out to a foreign tool |
-| **2** | Keep the landing funnel, re-point the CTA at the live workspace | Zero external hand-off; the funnel now converts into the working tool |
-| **3** | Upgrade persistence from `localStorage` → structured export (CSV/JSON) + import | Data is never trapped; creators can leave cleanly — trust feature |
-| **4** | (Future) Accounts + encrypted cloud sync | Multi-device without blessing spreadsheets |
-| **5** | (Future) Smarter parser — dates, recurring deals, per-category ledger views | The "notes inbox" turns into a real reporting surface |
+- `/dashboard/import`: upload CSV or XLSX (papaparse + xlsx) → column-mapping
+  UI (map their headers to amount/date/category/note) → preview table with
+  per-row validation flags (skippable, never silently dropped) → confirm →
+  bulk-insert as Entries.
+- `POST /api/import` (parse+preview), `POST /api/import/confirm` (commit).
+- **Acceptance:** a messy real-world CSV (missing values, a stray column, a
+  blank row) imports with bad rows flagged and everything else correct — never
+  a silent wrong number.
 
-### 4.3 The design rules we carry forward
+## Phase 7 — Settings & customization
 
-- **Input first.** Commit-by-paste remains the fastest path to a full ledger.
-- **One number of trust — the escrow.** Automatic tax set-aside is the headline feature.
-- **Local-first until told otherwise.** No account, no backend, no lock-in.
-- **Premium minimal.** Matte black, bone white, mono micro-labels, dense metrics —
-  zero visual slop.
-- **Deletion is immediate and surgical.** Every wrong entry dies with one click.
+**Goal:** "customizable at the edges," not a formula engine.
 
----
+- `/dashboard/settings`: categories (add/rename/hide/reorder), tax rate, active
+  preset, which Overview cards show and in what order, CSV/PDF export by date
+  range.
+- `GET/PATCH /api/settings`, `GET /api/export`.
+- **Acceptance:** hiding a category removes it from the breakdown and reflows
+  totals correctly; export produces a correct CSV for an arbitrary date range.
 
-## 5. Where We Stand Today
+## Phase 8 — Landing page & polish pass
 
-- **Done:** parser engine, batch commit, escrow node, delete routine, local
-  persistence, shadcn dashboard skin, green build, live dev server.
-- **Next:** the CTA/link strategy on the landing (stop linking to a Sheet),
-  then export/import, then (optionally) sync.
+**Goal:** the funnel matches the product, and the visual system is disciplined.
 
-The spreadsheet era is over. The ledger is local, fast, and ours.
+- Rewrite `/` — no Sheet references, no "Get the Template," CTA points straight
+  at signup.
+- One token file for color/spacing/typography (kills the
+  three-competing-palettes problem for good).
+- Responsive pass for the web app across common breakpoints (no mobile app, but
+  the browser page shouldn't break on a laptop-narrow window).
+- **Acceptance:** first-time visitor → signup → onboarding → working dashboard,
+  no dead links, no stray copy referencing spreadsheets.

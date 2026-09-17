@@ -1,0 +1,75 @@
+// Set-Aside — schema
+// All amounts are INTEGER CENTS. Direction is derived from a category's type.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CategoryType {
+  IN
+  OUT
+}
+
+enum EntrySource {
+  manual
+  import
+}
+
+enum Preset {
+  Freelance
+  Business
+  Personal
+  Creator
+}
+
+model User {
+  id        String   @id
+  email     String   @unique
+  createdAt DateTime @default(now())
+  categories Category[]
+  entries   Entry[]
+  settings  Settings?
+}
+
+model Category {
+  id        String       @id @default(uuid())
+  name      String
+  type      CategoryType @default(OUT)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries   Entry[]
+  createdAt DateTime     @default(now())
+
+  @@index([userId, type])
+  @@unique([userId, name])
+}
+
+model Entry {
+  id          String        @id @default(uuid())
+  amountCents Int
+  date        DateTime      @db.Date
+  note        String?
+  source      EntrySource   @default(manual)
+  categoryId  String?
+  category    Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+
+  @@index([userId, date])
+  @@index([userId, categoryId])
+}
+
+model Settings {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taxRate        Float    @default(23)
+  activePreset   Preset?
+  currencyDisplay String   @default("USD")
+  onboarded      Boolean  @default(false)
+}

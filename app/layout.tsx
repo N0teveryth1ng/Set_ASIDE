@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
-import { Toaster } from "@/components/ui/toaster";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -9,16 +8,10 @@ const inter = Inter({
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "NORM® — Design with Intention",
+  title: "Set-Aside",
   description:
-    "NORM is a digital product studio. We build clear, structural, typographic systems for teams that refuse the noise.",
+    "Set-Aside is a money dashboard for the self-employed: categories, a tax set-aside, and a Net Position you can actually trust.",
 };
 
 export default function RootLayout({
@@ -27,14 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`dark ${inter.variable} ${jetbrainsMono.variable}`}
-    >
-      <body className="font-sans">
-        {children}
-        <Toaster />
-      </body>
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans">{children}</body>
     </html>
   );
 }

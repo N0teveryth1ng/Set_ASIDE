@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --test lib/ledger/ledger.test.ts",
+    "test": "node --test \"lib/**/*.test.ts\"",
     "db:seed": "node prisma/seed.ts"
   },
   "dependencies": {

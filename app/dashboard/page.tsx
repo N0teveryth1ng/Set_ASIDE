@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { DashboardHeader } from "./dashboard-header";
 import { TutorialOverlay } from "./tutorial-overlay";
 
 export default async function DashboardPage() {
@@ -34,26 +36,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <header className="flex items-center justify-between border-b bg-white px-6 py-4">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900">Set-Aside</h1>
-          <p className="text-sm text-gray-500">Overview</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="hidden text-sm text-gray-500 sm:inline">
-            Signed in as{" "}
-            <span className="font-medium text-gray-900">{user.email}</span>
-          </span>
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-            >
-              Sign out
-            </button>
-          </form>
-        </div>
-      </header>
+      <DashboardHeader email={user.email ?? ""} />
 
       <section className="mx-auto max-w-3xl px-6 py-10">
         {empty ? (
@@ -66,6 +49,12 @@ export default async function DashboardPage() {
               Add your first entry or import a file to start tracking income and
               expenses.
             </p>
+            <Link
+              href="/dashboard/transactions"
+              className="mt-5 inline-block rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700"
+            >
+              Add your first entry
+            </Link>
             <p className="mt-4 text-xs text-gray-400">
               {categoryCount} categories from your {activePreset} preset are ready.
             </p>

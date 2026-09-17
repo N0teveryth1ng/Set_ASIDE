@@ -16,3 +16,6 @@ delete-discipline rule — this file now holds decisions that still bind.
 | D-008 | Import flags bad rows as skippable; nothing is silently dropped or silently corrected | A wrong recorded number is worse than a flagged blank |
 | D-009 | Entry validation: positive amount, category-derived sign, date + category required, "Uncategorized" fallback | Locked input rules shared across manual entry, edit, and import |
 | D-010 | Every phase carries a delete list; no phase closes with old and new UI both live | The discipline that ended the repo's history of compounding superseded layers |
+| D-011 | In-app data access is via Supabase REST (publishable key + the user's session JWT) so RLS is the ownership boundary at request time; Prisma is for migrations, seeds, and SQL-level admin only | D-005 is only real if the app itself never connects as the bypassing owner role |
+| D-012 | Every table's `id` is DB-generated (`gen_random_uuid()`), never client-supplied | PostgREST inserts cannot carry Prisma-style client ids; REST API clients omit `id` |
+| D-013 | Publishable/secret key pair (`sb_publishable_…` for browsers, `sb_secret_…` for server-only, admin-endpoint), legacy `anon`/`service_role` not relied upon | Supabase deprecates the JWT keys by end of 2026 |

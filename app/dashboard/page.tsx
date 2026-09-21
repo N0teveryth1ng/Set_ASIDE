@@ -2,7 +2,9 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { toLedgerEntry } from "@/lib/ledger/mapping";
+import { withoutHiddenCategories } from "@/lib/ledger/filter";
 import { buildSummary } from "@/lib/summary";
+import { DEFAULT_CARDS, normalizeCards, type CardToken } from "@/lib/settings";
 import { DashboardHeader } from "./dashboard-header";
 import { TutorialOverlay } from "./tutorial-overlay";
 import { OverviewView } from "./overview-view";
@@ -21,15 +23,22 @@ export default async function DashboardPage() {
       .from("Entry")
       .select("id,amountCents,date,note,source,category:Category(id,name,type)")
       .eq("userId", user.id),
-    supabase.from("Category").select("name").eq("userId", user.id),
+    supabase.from("Category").select("id,hidden").eq("userId", user.id),
   ]);
 
   if (!settings) redirect("/dashboard/onboarding");
+
+  const hiddenIds = new Set(
+    (categories ?? []).filter((c) => c.hidden).map((c) => c.id),
+  );
 
   const rows = entries ?? [];
   const empty = rows.length === 0;
   const categoryCount = categories?.length ?? 0;
   const activePreset = settings.activePreset ?? "Custom";
+  const cards: readonly CardToken[] = normalizeCards(settings.cards).ok
+    ? (settings.cards as CardToken[])
+    : DEFAULT_CARDS;
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -59,11 +68,12 @@ export default async function DashboardPage() {
         ) : (
           <OverviewView
             initial={buildSummary(
-              rows.map(toLedgerEntry),
+              withoutHiddenCategories(rows, hiddenIds).map(toLedgerEntry),
               "month",
               settings.taxRate ?? 23,
               settings.currencyDisplay ?? "USD",
             )}
+            cards={cards}
           />
         )}
       </section>

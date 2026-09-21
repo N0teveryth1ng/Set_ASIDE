@@ -39,12 +39,15 @@ model Category {
   id        String       @id @default(dbgenerated("gen_random_uuid()"))
   name      String
   type      CategoryType @default(OUT)
+  hidden    Boolean      @default(false)
+  sortOrder Int          @default(0)
   userId    String
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   entries   Entry[]
   createdAt DateTime     @default(now())
 
   @@index([userId, type])
+  @@index([userId, sortOrder])
   @@unique([userId, name])
 }
 
@@ -72,4 +75,5 @@ model Settings {
   activePreset   Preset?
   currencyDisplay String   @default("USD")
   onboarded      Boolean  @default(false)
+  cards          Json     @default("[\"hero\",\"money\",\"tax\",\"breakdown\",\"trend\"]")
 }

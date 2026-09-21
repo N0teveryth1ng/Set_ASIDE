@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactElement } from "react";
 import type { Period, CategoryTotal, TrendPoint, Totals } from "@/lib/ledger/types";
 import type { Summary } from "@/lib/summary";
+import { DEFAULT_CARDS, type CardToken } from "@/lib/settings";
 
 const PERIOD_LABELS: Record<Period, string> = {
   month: "Month",
@@ -194,7 +195,13 @@ function Trend({ trend, currency }: { trend: TrendPoint[]; currency: string }) {
   );
 }
 
-export function OverviewView({ initial }: { initial: Summary }) {
+export function OverviewView({
+  initial,
+  cards = DEFAULT_CARDS,
+}: {
+  initial: Summary;
+  cards?: readonly CardToken[];
+}) {
   const [summary, setSummary] = useState<Summary>(initial);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -217,27 +224,66 @@ export function OverviewView({ initial }: { initial: Summary }) {
     }
   }
 
+  const rows: ReactElement[] = [];
+  let pair: ReactElement[] = [];
+  const flushPair = () => {
+    if (pair.length > 0) {
+      rows.push(
+        <div key={`pair-${rows.length}`} className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {pair}
+        </div>,
+      );
+      pair = [];
+    }
+  };
+
+  for (const token of cards) {
+    if (token === "breakdown" || token === "trend") {
+      pair.push(
+        token === "breakdown" ? (
+          <Breakdown key="breakdown" items={summary.breakdown} currency={summary.currency} />
+        ) : (
+          <Trend key="trend" trend={summary.trend} currency={summary.currency} />
+        ),
+      );
+      if (pair.length === 2) flushPair();
+      continue;
+    }
+    flushPair();
+    rows.push(<div key={token}>{singleCard(token, summary, totals, pending, selectPeriod)}</div>);
+  }
+  flushPair();
+
   return (
     <div className="space-y-6">
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       )}
-      <HeroCard summary={summary} pending={pending} onSelect={selectPeriod} />
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <CountCard label="Money in" value={signed(totals.inCents, summary.currency).text} tone="text-emerald-600" />
-        <CountCard label="Money out" value={signed(totals.outCents, summary.currency).text} tone="text-red-600" />
-        <CountCard
-          label="Tax set-aside"
-          value={money(summary.taxSetAside, summary.currency)}
-          tone="text-gray-900"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Breakdown items={summary.breakdown} currency={summary.currency} />
-        <Trend trend={summary.trend} currency={summary.currency} />
-      </div>
+      {rows}
     </div>
   );
+}
+
+function singleCard(
+  token: CardToken,
+  summary: Summary,
+  totals: Totals,
+  pending: boolean,
+  onSelect: (period: Period) => void,
+): ReactElement {
+  switch (token) {
+    case "hero":
+      return <HeroCard summary={summary} pending={pending} onSelect={onSelect} />;
+    case "money":
+      return (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <CountCard label="Money in" value={signed(totals.inCents, summary.currency).text} tone="text-emerald-600" />
+          <CountCard label="Money out" value={signed(totals.outCents, summary.currency).text} tone="text-red-600" />
+        </div>
+      );
+    case "tax":
+      return <CountCard label="Tax set-aside" value={money(summary.taxSetAside, summary.currency)} tone="text-gray-900" />;
+    default:
+      return <></>;
+  }
 }

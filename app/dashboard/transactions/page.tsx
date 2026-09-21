@@ -28,7 +28,12 @@ export default async function TransactionsPage() {
       .eq("userId", user.id)
       .order("date", { ascending: false })
       .order("createdAt", { ascending: false }),
-    supabase.from("Category").select("id,name,type").eq("userId", user.id).order("name"),
+    supabase
+      .from("Category")
+      .select("id,name,type,hidden,sortOrder")
+      .eq("userId", user.id)
+      .order("sortOrder", { ascending: true })
+      .order("name", { ascending: true }),
     supabase.from("Settings").select("currencyDisplay").eq("userId", user.id).maybeSingle(),
   ]);
 
@@ -41,13 +46,17 @@ export default async function TransactionsPage() {
     category: embedToCategory(e.category),
   }));
 
+  // Hidden categories are removed from the breakdown/totals; they don't appear
+  // in the entry form either (existing entries keep their link and render by name).
+  const visibleCategories = (categories ?? []).filter((c) => !c.hidden) as CategoryOption[];
+
   return (
     <main className="min-h-screen bg-gray-50">
       <DashboardHeader email={user.email ?? ""} />
       <section className="mx-auto max-w-4xl px-6 py-10">
         <TransactionsView
           entries={rows}
-          categories={(categories ?? []) as CategoryOption[]}
+          categories={visibleCategories}
           currency={settings?.currencyDisplay ?? "USD"}
         />
       </section>

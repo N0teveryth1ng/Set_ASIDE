@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import type { ColumnMapping, ImportRow } from "@/lib/import/validate";
+import { palette, recipe, space, type } from "@/lib/tokens";
 
 type Status = ImportRow["status"];
 
@@ -25,10 +26,10 @@ const FIELDS: { key: Field; label: string }[] = [
 ];
 
 const STATUS_TONE: Record<Status, string> = {
-  ok: "bg-emerald-100 text-emerald-800",
-  warning: "bg-amber-100 text-amber-800",
-  error: "bg-red-100 text-red-800",
-  blank: "bg-gray-100 text-gray-500",
+  ok: `${recipe.chip} ${palette.gainChip}`,
+  warning: `${recipe.chip} ${palette.warnChip}`,
+  error: `${recipe.chip} ${palette.lossChip}`,
+  blank: `${recipe.chip} ${palette.inkSoft} ${palette.textFaint}`,
 };
 
 const STATUS_LABEL: Record<Status, string> = {
@@ -187,28 +188,22 @@ export function ImportView({ email }: { email: string }) {
 
   if (done !== null) {
     return (
-      <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-2xl">
+      <div className={`${recipe.surface} px-6 py-16 text-center`}>
+        <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full text-2xl ${palette.gainChip}`}>
           ✓
         </div>
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className={type.pageTitle + " " + palette.text}>
           Imported {done} {done === 1 ? "entry" : "entries"}
         </h2>
-        <p className="mx-auto mt-2 max-w-md text-sm text-gray-600">
+        <p className={`mx-auto mt-2 max-w-md ${type.text} ${palette.textSubtle}`}>
           Everything that cleared validation was committed as import-sourced
           entries. Blocked rows were left untouched.
         </p>
-        <div className="mt-6 flex justify-center gap-3">
-          <button
-            onClick={resetFromState}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <button onClick={resetFromState} className={recipe.btnGhostLg}>
             Import another file
           </button>
-          <a
-            href="/dashboard/transactions"
-            className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
-          >
+          <a href="/dashboard/transactions" className={recipe.btnPrimaryLg}>
             View transactions
           </a>
         </div>
@@ -217,14 +212,12 @@ export function ImportView({ email }: { email: string }) {
   }
 
   return (
-    <div className="space-y-6">
-      {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
-      )}
+    <div className={space.stack}>
+      {error && <div className={recipe.errorBox}>{error}</div>}
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-6">
-        <h2 className="text-sm font-semibold text-gray-900">1 · Upload a file</h2>
-        <label className="mt-3 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center transition hover:border-gray-400">
+      <div className={`${recipe.surface} p-6`}>
+        <h2 className={type.sectionTitle + " " + palette.text}>1 · Upload a file</h2>
+        <label className={`mt-3 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${palette.borderStrong} ${palette.inkSoft} px-6 py-10 text-center transition hover:border-gray-400`}>
           <input
             ref={inputRef}
             type="file"
@@ -233,11 +226,11 @@ export function ImportView({ email }: { email: string }) {
             disabled={busy}
             onChange={(e) => onFile(e.target.files?.[0])}
           />
-          <span className="text-sm font-medium text-gray-700">
+          <span className={`${type.text} font-medium ${palette.textMuted}`}>
             {preview ? preview.fileName : "Drop a CSV or XLSX file here"}
           </span>
-          <span className="mt-1 text-xs text-gray-400">or click to browse · 2 MB max</span>
-          <span className="mt-3 rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white">
+          <span className={`mt-1 text-xs ${palette.textGhost}`}>or click to browse · 2 MB max</span>
+          <span className={`mt-3 rounded-full ${palette.ink} px-3 py-1 ${type.tiny} ${palette.textInverse}`}>
             {preview ? "Replace file" : "Choose file"}
           </span>
         </label>
@@ -245,16 +238,16 @@ export function ImportView({ email }: { email: string }) {
 
       {preview && (
         <>
-          <div className="rounded-2xl border border-gray-200 bg-white p-6">
-            <h2 className="text-sm font-semibold text-gray-900">2 · Map columns</h2>
+          <div className={`${recipe.surface} p-6`}>
+            <h2 className={type.sectionTitle + " " + palette.text}>2 · Map columns</h2>
             <div className="mt-4 flex flex-wrap items-end gap-4">
               {FIELDS.map((field) => (
                 <label key={field.key} className="block">
-                  <span className="text-xs font-medium text-gray-500">{field.label}</span>
+                  <span className={recipe.labelThin}>{field.label}</span>
                   <select
                     value={mapping[field.key] ?? -1}
                     onChange={(e) => updateField(field.key, Number(e.target.value))}
-                    className="mt-1 block rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                    className={recipe.inputControl}
                   >
                     <option value={-1}>— none —</option>
                     {labels.map((label, i) => (
@@ -265,36 +258,28 @@ export function ImportView({ email }: { email: string }) {
                   </select>
                 </label>
               ))}
-              <label className="flex items-center gap-2 pb-2.5 text-sm text-gray-600">
+              <label className={`flex items-center gap-2 pb-2.5 ${type.text} ${palette.textSubtle}`}>
                 <input
                   type="checkbox"
                   checked={hasHeader}
                   onChange={(e) => toggleHeader(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300"
+                  className={`h-4 w-4 rounded ${palette.borderStrong}`}
                 />
                 First row is a header
               </label>
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full bg-emerald-100 px-2.5 py-1 font-medium text-emerald-800">
-                {preview.summary.ok} ready
-              </span>
-              <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-800">
-                {preview.summary.warning} review
-              </span>
-              <span className="rounded-full bg-red-100 px-2.5 py-1 font-medium text-red-800">
-                {preview.summary.error} blocked
-              </span>
-              <span className="rounded-full bg-gray-100 px-2.5 py-1 font-medium text-gray-500">
-                {preview.summary.blank} skipped
-              </span>
+              <span className={`${recipe.chip} ${palette.gainChip}`}>{preview.summary.ok} ready</span>
+              <span className={`${recipe.chip} ${palette.warnChip}`}>{preview.summary.warning} review</span>
+              <span className={`${recipe.chip} ${palette.lossChip}`}>{preview.summary.error} blocked</span>
+              <span className={`${recipe.chip} ${palette.inkSoft} ${palette.textFaint}`}>{preview.summary.blank} skipped</span>
             </div>
 
-            <h2 className="mt-6 text-sm font-semibold text-gray-900">3 · Review rows</h2>
-            <div className="mt-3 overflow-x-auto rounded-xl border border-gray-200">
-              <table className="min-w-full divide-y divide-gray-200 text-sm">
-                <thead className="bg-gray-50 text-left text-xs text-gray-500">
+            <h2 className={`mt-6 ${type.sectionTitle} ${palette.text}`}>3 · Review rows</h2>
+            <div className={`mt-3 overflow-x-auto rounded-xl border ${palette.border}`}>
+              <table className="min-w-full text-sm">
+                <thead className={`${palette.inkSoft} text-left text-xs ${palette.textGhost}`}>
                   <tr>
                     <th className="px-3 py-2 font-medium">Line</th>
                     <th className="px-3 py-2 font-medium">Amount</th>
@@ -304,20 +289,20 @@ export function ImportView({ email }: { email: string }) {
                     <th className="px-3 py-2 font-medium">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className={`divide-y ${palette.divideStrong}`}>
                   {preview.rows.map((row) => {
                     const cells = preview.parsedRows[row.index + dataStartFor(preview, hasHeader)] ?? [];
                     const included = include.has(row.index);
                     const canInclude = row.status === "ok" || row.status === "warning";
                     return (
-                      <tr key={row.index} className={included ? "bg-white" : "bg-gray-50/60"}>
-                        <td className="px-3 py-2 text-xs text-gray-400">{row.sourceLine}</td>
-                        <td className="px-3 py-2 tabular-nums text-gray-900">
+                      <tr key={row.index} className={included ? palette.surface : palette.inkSoft}>
+                        <td className={`px-3 py-2 text-xs ${palette.textGhost}`}>{row.sourceLine}</td>
+                        <td className={`px-3 py-2 tabular-nums ${palette.text}`}>
                           {money(row.amountCents) || (row.status === "blank" ? "" : cells[mapping.amount] ?? "")}
                         </td>
-                        <td className="px-3 py-2 text-gray-900">{row.date ?? (row.status === "blank" ? "" : cells[mapping.date] ?? "")}</td>
-                        <td className="px-3 py-2 text-gray-900">{row.categoryName ?? ""}</td>
-                        <td className="max-w-xs truncate px-3 py-2 text-gray-500">{row.note ?? ""}</td>
+                        <td className={`px-3 py-2 ${palette.text}`}>{row.date ?? (row.status === "blank" ? "" : cells[mapping.date] ?? "")}</td>
+                        <td className={`px-3 py-2 ${palette.text}`}>{row.categoryName ?? ""}</td>
+                        <td className={`max-w-xs truncate px-3 py-2 ${palette.textGhost}`}>{row.note ?? ""}</td>
                         <td className="px-3 py-2">
                           <div className="flex items-center gap-2">
                             <input
@@ -325,10 +310,10 @@ export function ImportView({ email }: { email: string }) {
                               checked={included}
                               disabled={!canInclude || busy}
                               onChange={(e) => toggleInclude(row.index, e.target.checked)}
-                              className="h-4 w-4 rounded border-gray-300"
+                              className={`h-4 w-4 rounded ${palette.borderStrong}`}
                               aria-label={`Include row ${row.sourceLine}`}
                             />
-                            <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_TONE[row.status]}`}>
+                            <span className={STATUS_TONE[row.status]}>
                               {STATUS_LABEL[row.status]}
                             </span>
                           </div>
@@ -337,7 +322,7 @@ export function ImportView({ email }: { email: string }) {
                           <td className="px-3 py-2">
                             <div className="max-w-xs space-y-1">
                               {row.flags.map((flag, i) => (
-                                <p key={i} className="text-xs text-gray-500">
+                                <p key={i} className={`text-xs ${palette.textGhost}`}>
                                   {flag.message}
                                 </p>
                               ))}
@@ -352,13 +337,13 @@ export function ImportView({ email }: { email: string }) {
             </div>
 
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-xs text-gray-400">
+              <p className={`text-xs ${palette.textGhost}`}>
                 Blocked rows can’t be imported — they’re never silently altered.
               </p>
               <button
                 onClick={confirmImport}
                 disabled={busy}
-                className="rounded-md bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+                className={recipe.btnPrimaryLg}
               >
                 {busy ? "Importing…" : "Import selected rows"}
               </button>

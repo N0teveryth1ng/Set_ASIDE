@@ -8,6 +8,7 @@ import { DEFAULT_CARDS, normalizeCards, type CardToken } from "@/lib/settings";
 import { DashboardHeader } from "./dashboard-header";
 import { TutorialOverlay } from "./tutorial-overlay";
 import { OverviewView } from "./overview-view";
+import { palette, recipe, space } from "@/lib/tokens";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -41,27 +42,24 @@ export default async function DashboardPage() {
     : DEFAULT_CARDS;
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className={recipe.page}>
       <DashboardHeader email={user.email ?? ""} />
 
-      <section className="mx-auto max-w-5xl px-6 py-10">
+      <section className={`${space.containerLg} py-10`}>
         {empty ? (
-          <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-2xl">
+          <div className={recipe.surfaceDashed + " px-6 py-16 text-center"}>
+            <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full text-2xl ${palette.inkSoft}`}>
               📒
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">Your ledger is empty</h2>
-            <p className="mx-auto mt-2 max-w-md text-sm text-gray-600">
+            <h2 className={`text-lg font-semibold ${palette.text}`}>Your ledger is empty</h2>
+            <p className={`mx-auto mt-2 max-w-md text-sm ${palette.textSubtle}`}>
               Add your first entry or import a file to start tracking income and
               expenses.
             </p>
-            <Link
-              href="/dashboard/transactions"
-              className="mt-5 inline-block rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700"
-            >
+            <Link href="/dashboard/transactions" className={`${recipe.btnPrimaryLg} mt-5 inline-block`}>
               Add your first entry
             </Link>
-            <p className="mt-4 text-xs text-gray-400">
+            <p className={`mt-4 text-xs ${palette.textGhost}`}>
               {categoryCount} categories from your {activePreset} preset are ready.
             </p>
           </div>

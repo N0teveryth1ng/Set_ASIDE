@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { parseEntryInput } from "@/lib/entry-input";
 import type { EntryRow, CategoryOption } from "./types";
+import { palette, recipe, type } from "@/lib/tokens";
 
 interface Draft {
   amount: string;
@@ -26,9 +27,9 @@ function amountStyle(entry: EntryRow, currency: string): AmountStyle {
     currency: code,
     currencyDisplay: "narrowSymbol",
   }).format(Math.abs(entry.amountCents) / 100);
-  if (!entry.category) return { text: abs, cls: "text-gray-600" };
-  if (entry.category.type === "IN") return { text: `+${abs}`, cls: "text-emerald-600" };
-  return { text: `\u2212${abs}`, cls: "text-red-600" };
+  if (!entry.category) return { text: abs, cls: palette.textSubtle };
+  if (entry.category.type === "IN") return { text: `+${abs}`, cls: palette.gainText };
+  return { text: `\u2212${abs}`, cls: palette.lossText };
 }
 
 function toDraft(entry: EntryRow): Draft {
@@ -49,12 +50,9 @@ function draftToInput(draft: Draft) {
   });
 }
 
-const inputCls =
-  "w-full rounded-md border border-gray-300 px-2.5 py-1.5 text-sm text-gray-900 focus:border-gray-400 focus:outline-none";
-const btnPrimary =
-  "rounded-md bg-gray-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-60";
-const btnGhost =
-  "rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-50";
+const inputCls = recipe.input;
+const btnPrimary = recipe.btnPrimary;
+const btnGhost = recipe.btnGhost;
 
 export function TransactionsView({
   entries,
@@ -130,18 +128,16 @@ export function TransactionsView({
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Transactions</h2>
-        <p className="text-sm text-gray-500">
+        <h2 className={type.pageTitle + " " + palette.text}>Transactions</h2>
+        <p className={`${type.text} ${palette.textFaint}`}>
           {entries.length} entr{entries.length === 1 ? "y" : "ies"} · amounts in whole
           cents ($1.00 = 100)
         </p>
       </div>
 
-      {error && (
-        <p className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
-      )}
+      {error && <p className={`${recipe.errorBoxLg} mb-4`}>{error}</p>}
 
-      <div className="mb-8 rounded-2xl border bg-white p-4 shadow-sm">
+      <div className={`${recipe.surface} mb-8 p-4 shadow-sm`}>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           <input
             type="number"
@@ -186,15 +182,15 @@ export function TransactionsView({
       </div>
 
       {entries.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center">
-          <p className="text-sm text-gray-600">
+        <div className={`${recipe.surfaceDashed} px-6 py-12 text-center`}>
+          <p className={`${type.text} ${palette.textSubtle}`}>
             No entries yet — add your first entry above.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+        <div className={`${recipe.surface} overflow-x-auto shadow-sm`}>
           <table className="w-full text-left text-sm">
-            <thead className="border-b bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+            <thead className={`border-b ${palette.inkSoft} ${type.caps} ${palette.textGhost}`}>
               <tr>
                 <th className="px-4 py-3 font-medium">Date</th>
                 <th className="px-4 py-3 font-medium">Category</th>
@@ -203,12 +199,12 @@ export function TransactionsView({
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className={`divide-y ${palette.divide}`}>
               {entries.map((entry) => {
                 const { text, cls } = amountStyle(entry, currency);
                 if (editingId === entry.id) {
                   return (
-                    <tr key={entry.id} className="bg-amber-50/40">
+                    <tr key={entry.id} className={palette.warnSoftBg}>
                       <td className="px-4 py-2">
                         <input
                           type="date"
@@ -282,12 +278,12 @@ export function TransactionsView({
                   );
                 }
                 return (
-                  <tr key={entry.id} className="transition-colors hover:bg-gray-50">
-                    <td className="px-4 py-3 text-gray-500">{entry.date}</td>
-                    <td className="px-4 py-3 text-gray-900">
+                  <tr key={entry.id} className={`transition-colors ${palette.surfaceHover}`}>
+                    <td className={`px-4 py-3 ${palette.textGhost}`}>{entry.date}</td>
+                    <td className={`px-4 py-3 ${palette.text}`}>
                       {entry.category ? entry.category.name : "Uncategorized"}
                     </td>
-                    <td className="px-4 py-3 text-gray-500">{entry.note ?? ""}</td>
+                    <td className={`px-4 py-3 ${palette.textGhost}`}>{entry.note ?? ""}</td>
                     <td className={`px-4 py-3 text-right font-medium tabular-nums ${cls}`}>
                       {text}
                     </td>
@@ -306,7 +302,7 @@ export function TransactionsView({
                         <button
                           type="button"
                           onClick={() => remove(entry.id)}
-                          className={`${btnGhost} text-red-600 hover:bg-red-50`}
+                          className={recipe.btnDanger}
                         >
                           Delete
                         </button>

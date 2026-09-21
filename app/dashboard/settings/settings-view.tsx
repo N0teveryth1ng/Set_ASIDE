@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PRESETS } from "@/lib/presets";
 import { CARD_LABELS, CARD_TOKENS, type CardToken } from "@/lib/settings";
+import { palette, recipe, space, type } from "@/lib/tokens";
 
 export interface SettingsState {
   taxRate: number;
@@ -27,18 +28,18 @@ interface CategoryResponse {
   category: CategoryRow;
 }
 
-const inputCls =
-  "w-full rounded-md border border-gray-300 px-2.5 py-1.5 text-sm text-gray-900 focus:border-gray-400 focus:outline-none";
-const labelCls = "block text-sm font-medium text-gray-700";
-const btnPrimary =
-  "rounded-md bg-gray-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-60";
-const btnGhost =
-  "rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-50";
+const inputCls = recipe.input;
+const labelCls = recipe.label;
+const btnPrimary = recipe.btnPrimary;
+const btnGhost = recipe.btnGhost;
+
+const moveBtn =
+  `rounded border ${palette.borderStrong} px-1.5 text-xs ${palette.textFaint} ${palette.surfaceHover} disabled:opacity-40`;
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-gray-200 bg-white p-5">
-      <h2 className="text-base font-semibold text-gray-900">{title}</h2>
+    <section className={`${recipe.surface} p-5`}>
+      <h2 className={type.sectionTitle + " " + palette.text}>{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -64,15 +65,15 @@ function CardRow({
   const tokenName = token as CardToken;
   return (
     <li
-      className={`flex items-center gap-2 rounded-lg border p-2 ${
-        visible ? "border-gray-200" : "border-dashed bg-gray-50 opacity-70"
+      className={`flex flex-wrap items-center gap-2 rounded-lg border p-2 ${
+        visible ? palette.border : `${palette.borderStrong} border-dashed ${palette.inkSoft} opacity-70`
       }`}
     >
       <button
         type="button"
         onClick={() => onMove(-1)}
         disabled={!visible || isFirst || busy}
-        className="rounded border border-gray-300 px-1.5 text-xs text-gray-500 hover:bg-gray-50 disabled:opacity-40"
+        className={moveBtn}
         aria-label="Move up"
       >
         ↑
@@ -81,18 +82,18 @@ function CardRow({
         type="button"
         onClick={() => onMove(1)}
         disabled={!visible || isLast || busy}
-        className="rounded border border-gray-300 px-1.5 text-xs text-gray-500 hover:bg-gray-50 disabled:opacity-40"
+        className={moveBtn}
         aria-label="Move down"
       >
         ↓
       </button>
-      <span className="text-sm font-medium text-gray-800">{CARD_LABELS[tokenName]}</span>
-      <label className="ml-auto flex items-center gap-1.5 text-sm text-gray-600">
+      <span className={`text-sm font-medium ${palette.text}`}>{CARD_LABELS[tokenName]}</span>
+      <label className={`ml-auto flex items-center gap-1.5 text-sm ${palette.textSubtle}`}>
         <input
           type="checkbox"
           checked={visible}
           onChange={(e) => onToggle(e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300"
+          className={`h-4 w-4 rounded ${palette.borderStrong}`}
         />
         Shown
       </label>
@@ -267,32 +268,32 @@ export function SettingsView({
   }
 
   return (
-    <div className="space-y-6">
+    <div className={space.stack}>
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">Settings</h2>
-        <p className="text-sm text-gray-500">
+        <h2 className={type.pageTitle + " " + palette.text}>Settings</h2>
+        <p className={`${type.text} ${palette.textGhost}`}>
           Customize your categories, tax rate, overview cards, and exports.
         </p>
       </div>
 
-      {error && (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
-      )}
+      {error && <p className={recipe.errorBoxLg}>{error}</p>}
 
       <Section title="Categories">
         <ul className="space-y-2">
           {categories.map((category, index) => (
             <li
               key={category.id}
-              className={`flex items-center gap-2 rounded-lg border p-2 ${
-                category.hidden ? "border-dashed bg-gray-50 opacity-70" : "border-gray-200"
+              className={`flex flex-wrap items-center gap-2 rounded-lg border p-2 ${
+                category.hidden
+                  ? `${palette.borderStrong} border-dashed ${palette.inkSoft} opacity-70`
+                  : palette.border
               }`}
             >
               <button
                 type="button"
                 onClick={() => moveCategory(index, -1)}
                 disabled={index === 0 || busy}
-                className="rounded border border-gray-300 px-1.5 text-xs text-gray-500 hover:bg-gray-50 disabled:opacity-40"
+                className={moveBtn}
                 aria-label="Move up"
               >
                 ↑
@@ -301,7 +302,7 @@ export function SettingsView({
                 type="button"
                 onClick={() => moveCategory(index, 1)}
                 disabled={index === categories.length - 1 || busy}
-                className="rounded border border-gray-300 px-1.5 text-xs text-gray-500 hover:bg-gray-50 disabled:opacity-40"
+                className={moveBtn}
                 aria-label="Move down"
               >
                 ↓
@@ -317,20 +318,18 @@ export function SettingsView({
                 }}
               />
               <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                  category.type === "IN"
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "bg-red-50 text-red-700"
+                className={`${recipe.chip} ${
+                  category.type === "IN" ? palette.gainChip : palette.lossChip
                 }`}
               >
                 {category.type === "IN" ? "+ Income" : "− Expense"}
               </span>
-              <label className="ml-auto flex items-center gap-1.5 text-sm text-gray-600">
+              <label className={`ml-auto flex items-center gap-1.5 text-sm ${palette.textSubtle}`}>
                 <input
                   type="checkbox"
                   checked={!category.hidden}
                   onChange={(e) => patchCategory(category.id, { hidden: !e.target.checked })}
-                  className="h-4 w-4 rounded border-gray-300"
+                  className={`h-4 w-4 rounded ${palette.borderStrong}`}
                 />
                 {category.hidden ? "Hidden" : "Visible"}
               </label>
@@ -338,7 +337,7 @@ export function SettingsView({
           ))}
         </ul>
 
-        <div className="mt-4 flex items-end gap-2 border-t border-gray-100 pt-4">
+        <div className={`mt-4 flex flex-wrap items-end gap-2 border-t pt-4 ${palette.divideStrong}`}>
           <div>
             <label className={labelCls} htmlFor="new-cat-name">
               New category
@@ -374,7 +373,7 @@ export function SettingsView({
       </Section>
 
       <Section title="Tax rate">
-        <p className="text-sm text-gray-500">
+        <p className={`${type.text} ${palette.textGhost}`}>
           Percent of your positive net position set aside for taxes each period.
         </p>
         <div className="mt-3 flex items-end gap-2">
@@ -400,7 +399,7 @@ export function SettingsView({
       </Section>
 
       <Section title="Active preset">
-        <p className="text-sm text-gray-500">
+        <p className={`${type.text} ${palette.textGhost}`}>
           Switching presets merges that preset&apos;s categories into your list
           (existing categories are kept).
         </p>
@@ -422,7 +421,7 @@ export function SettingsView({
       </Section>
 
       <Section title="Overview cards">
-        <p className="text-sm text-gray-500">
+        <p className={`${type.text} ${palette.textGhost}`}>
           Choose which Overview sections show and their order during the period.
         </p>
         <ul className="mt-3 space-y-2">
@@ -454,7 +453,7 @@ export function SettingsView({
       </Section>
 
       <Section title="Export">
-        <p className="text-sm text-gray-500">
+        <p className={`${type.text} ${palette.textGhost}`}>
           Download every entry in a date range as CSV, or open a printable report
           you can save as PDF from the browser.
         </p>

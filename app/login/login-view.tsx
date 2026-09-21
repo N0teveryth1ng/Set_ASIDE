@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { palette, radius, recipe, space, type } from "@/lib/tokens";
 
 export default function LoginView() {
   const router = useRouter();
@@ -51,55 +52,51 @@ export default function LoginView() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-sm space-y-6 rounded-xl border bg-white p-8 shadow-sm">
+    <main className={`flex min-h-screen items-center justify-center ${palette.canvas} p-4`}>
+      <div className={`${radius.box} w-full max-w-sm space-y-6 p-8 shadow-sm ${palette.surface} ${palette.border}`}>
         <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-gray-900">Set-Aside</h1>
-          <p className="text-sm text-gray-500">Sign in to your ledger</p>
+          <h1 className={`${type.heading} ${palette.text}`}>Set-Aside</h1>
+          <p className={type.text + " " + palette.textFaint}>Sign in to your ledger</p>
         </div>
 
         {error && (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className={`${recipe.errorBoxLg} ${palette.lossText}`}>
             {errorText[error] ?? "Something went wrong."}
           </p>
         )}
         {message && (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{message}</p>
+          <p className={`${recipe.errorBoxLg} ${palette.lossText}`}>{message}</p>
         )}
-        {sent && (
-          <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-            Magic link sent. Check your inbox and click the link to sign in.
-          </p>
-        )}
+        {sent && <p className={recipe.successNote}>Magic link sent. Check your inbox and click the link to sign in.</p>}
 
         <button
           type="button"
           onClick={signInWithGoogle}
           disabled={busy}
-          className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+          className={`${recipe.btnGhostLg} w-full`}
         >
           Continue with Google
         </button>
 
-        <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-gray-400">
-          <div className="h-px flex-1 bg-gray-200" />
+        <div className={`flex items-center gap-3 ${type.tiny} ${palette.textGhost} uppercase tracking-wide`}>
+          <div className={`h-px flex-1 ${palette.inkSoftHover}`} />
           or
-          <div className="h-px flex-1 bg-gray-200" />
+          <div className={`h-px flex-1 ${palette.inkSoftHover}`} />
         </div>
 
-        <form onSubmit={sendMagicLink} className="space-y-3">
+        <form onSubmit={sendMagicLink} className={space.stackXxs}>
           <input
             type="email"
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+            className={recipe.inputControl}
           />
           <button
             type="submit"
             disabled={busy}
-            className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
+            className={`${recipe.btnPrimaryLg} w-full`}
           >
             Send magic link
           </button>

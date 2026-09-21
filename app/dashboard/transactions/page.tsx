@@ -4,6 +4,7 @@ import { embedToCategory } from "@/lib/ledger/mapping";
 import { DashboardHeader } from "../dashboard-header";
 import { TransactionsView } from "./transactions-view";
 import type { EntryRow, CategoryOption } from "./types";
+import { palette, space } from "@/lib/tokens";
 
 interface RawEntryRow {
   id: string;
@@ -51,9 +52,9 @@ export default async function TransactionsPage() {
   const visibleCategories = (categories ?? []).filter((c) => !c.hidden) as CategoryOption[];
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className={palette.canvas + " min-h-screen"}>
       <DashboardHeader email={user.email ?? ""} />
-      <section className="mx-auto max-w-4xl px-6 py-10">
+      <section className={`${space.containerLg} py-10`}>
         <TransactionsView
           entries={rows}
           categories={visibleCategories}

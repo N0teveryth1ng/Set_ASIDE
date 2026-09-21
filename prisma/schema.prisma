@@ -17,7 +17,6 @@ enum CategoryType {
 enum EntrySource {
   manual
   import
-  recurring
 }
 
 enum Preset {
@@ -33,7 +32,6 @@ model User {
   createdAt DateTime @default(now())
   categories Category[]
   entries   Entry[]
-  templates Template[]
   settings  Settings?
 }
 
@@ -46,7 +44,6 @@ model Category {
   userId    String
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   entries   Entry[]
-  templates Template[]
   createdAt DateTime     @default(now())
 
   @@index([userId, type])
@@ -62,34 +59,12 @@ model Entry {
   source      EntrySource   @default(manual)
   categoryId  String?
   category    Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  templateId  String?
-  template    Template?     @relation(fields: [templateId], references: [id], onDelete: SetNull)
   userId      String
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime      @default(now())
 
   @@index([userId, date])
   @@index([userId, categoryId])
-  @@index([templateId])
-}
-
-model Template {
-  id          String     @id @default(dbgenerated("gen_random_uuid()"))
-  amountCents Int
-  dayOfMonth  Int
-  startDate   DateTime   @db.Date
-  endDate     DateTime?  @db.Date
-  note        String?
-  active      Boolean    @default(true)
-  categoryId  String?
-  category    Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  userId      String
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  entries     Entry[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @default(now())
-
-  @@index([userId, active])
 }
 
 model Settings {

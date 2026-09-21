@@ -7,7 +7,6 @@ const LINKS = [
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/transactions", label: "Transactions" },
   { href: "/dashboard/import", label: "Import" },
-  { href: "/dashboard/recurring", label: "Recurring" },
   { href: "/dashboard/settings", label: "Settings" },
 ];
 

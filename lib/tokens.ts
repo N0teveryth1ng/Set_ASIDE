@@ -8,7 +8,10 @@
 //   - Semantics: `gain` = emerald (money in / positive net), `loss` = red
 //     (money out / negative net), `warn` = amber (review / not final),
 //     `canvas` = gray-50 page background, `surface` = white cards.
-//   - "Ink" is the near-black used for primary surfaces and buttons (gray-900).
+//   - `cta` = the single accent (indigo). Used sparingly: primary CTAs,
+//     active/focus states, and nothing else decorative.
+//   - "Ink" is the near-black used for secondary surfaces and nav states.
+//     The only hex values in the app live in this file.
 
 export const palette = {
   canvas: "bg-gray-50",
@@ -51,6 +54,16 @@ export const palette = {
   warnSoftBg: "bg-amber-50/40",
 
   dangerSolid: "text-red-600 hover:bg-red-50",
+
+  // Single accent — indigo. All hex values in the codebase live here.
+  cta: "bg-[#4F46E5]",
+  ctaHover: "hover:bg-[#4338CA]",
+  ctaSoft: "bg-[#EEF2FF]",
+  ctaSoftHover: "hover:bg-[#EEF2FF]",
+  ctaText: "text-[#4F46E5]",
+  ctaTextHover: "hover:text-[#4338CA]",
+  ctaBorder: "border-[#4F46E5]",
+  ctaRing: "focus:ring-[#4F46E5]/30",
 } as const;
 
 export const radius = {
@@ -61,29 +74,32 @@ export const radius = {
 } as const;
 
 export const type = {
-  hero: "text-4xl font-bold",
-  cardValue: "text-2xl font-semibold",
+  displayHero: "font-display text-5xl font-semibold tracking-[-0.02em] sm:text-6xl",
+  heroNumber: "font-display text-5xl font-semibold tracking-[-0.02em] tabular-nums sm:text-6xl",
+  brand: "font-display text-lg font-semibold tracking-tight",
+  pageTitle: "font-display text-2xl font-semibold tracking-tight",
+  cardValue: "text-2xl font-semibold tabular-nums",
   cardLabel: "text-sm font-medium",
-  pageTitle: "text-lg font-semibold",
   sectionTitle: "text-base font-semibold",
-  heading: "text-xl font-semibold",
+  heading: "font-display text-xl font-semibold tracking-tight",
   text: "text-sm",
   tiny: "text-xs",
   chip: "text-xs font-medium",
   tbodyCell: "text-sm",
-  caps: "text-xs uppercase tracking-wide",
+  caps: "text-xs uppercase tracking-[0.08em]",
 } as const;
 
 export const space = {
-  page: "px-6 py-10",
-  pageLg: "px-6 py-12",
+  page: "px-6 py-12",
+  pageLg: "px-6 py-14",
   containerMd: "mx-auto max-w-3xl px-6",
   containerLg: "mx-auto max-w-5xl px-6",
   stack: "space-y-6",
+  stackLg: "space-y-8",
   stackXs: "space-y-3",
   stackXxs: "space-y-2",
-  card: "p-5",
-  cardLg: "p-6",
+  card: "p-6",
+  cardLg: "p-8",
 } as const;
 
 // Composed recipes — the class strings shared across components today,
@@ -99,10 +115,10 @@ export const recipe = {
   label: "block text-sm font-medium text-gray-700",
   labelThin: "text-xs font-medium text-gray-500",
 
-  btnPrimary: `rounded-md ${palette.ink} px-4 py-1.5 text-sm font-medium ${palette.textInverse} transition-colors hover:bg-gray-700 disabled:opacity-60`,
-  btnPrimaryLg: `rounded-md ${palette.ink} px-4 py-2 text-sm font-medium ${palette.textInverse} transition-colors hover:bg-gray-700 disabled:opacity-50`,
-  btnGhost: `rounded-md border ${palette.borderStrong} px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-50`,
-  btnGhostLg: `rounded-md border ${palette.borderStrong} ${palette.surface} px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50`,
+  btnPrimary: `rounded-md ${palette.cta} px-4 py-1.5 text-sm font-medium ${palette.textInverse} transition-colors ${palette.ctaHover} focus:outline-none ${palette.ctaRing} disabled:opacity-60`,
+  btnPrimaryLg: `rounded-md ${palette.cta} px-4 py-2 text-sm font-medium ${palette.textInverse} transition-colors ${palette.ctaHover} focus:outline-none ${palette.ctaRing} disabled:opacity-50`,
+  btnGhost: `rounded-md border ${palette.borderStrong} px-3 py-1.5 text-sm text-gray-600 transition-colors ${palette.surfaceHover}`,
+  btnGhostLg: `rounded-md border ${palette.borderStrong} ${palette.surface} px-4 py-2 text-sm font-medium text-gray-700 transition-colors ${palette.surfaceHover}`,
   btnDanger: `rounded-md border ${palette.borderStrong} px-3 py-1.5 text-sm transition-colors ${palette.dangerSolid}`,
 
   errorBox: `${radius.box} border ${palette.lossBorder} ${palette.lossText} bg-red-50 px-4 py-3 text-sm`,
@@ -113,7 +129,7 @@ export const recipe = {
     `rounded-full px-3 py-1 text-sm font-medium transition ${
       selected
         ? `${palette.ink} text-white`
-        : `bg-gray-100 text-gray-600 hover:bg-gray-200`
+        : `bg-gray-100 text-gray-600 ${palette.surfaceHover}`
     } disabled:opacity-50`,
   chip: `rounded-full px-2 py-0.5 text-xs font-medium`,
 } as const;

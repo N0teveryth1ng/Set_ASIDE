@@ -76,10 +76,7 @@ function CallbackInner() {
   }, [searchParams]);
 
   return (
-    <main
-      className="flex min-h-screen items-center justify-center"
-      style={{ fontFamily: "system-ui, sans-serif" }}
-    >
+    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <p className="text-sm text-gray-500">{stage}</p>
     </main>
   );

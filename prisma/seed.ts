@@ -36,7 +36,7 @@ async function main() {
   }
 
   console.log(
-    `[seed] ${user.email} ← preset ${preset.preset} (${preset.categories.length} categories)`,
+    `[seed] ${user.email} to preset ${preset.preset} (${preset.categories.length} categories)`,
   );
   await prisma.$disconnect();
 }

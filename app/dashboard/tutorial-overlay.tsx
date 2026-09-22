@@ -41,7 +41,7 @@ export function TutorialOverlay() {
 
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${palette.inkOverlay}`}>
-      <div className={`w-full max-w-md rounded-2xl bg-white p-6 shadow-xl`}>
+      <div className={`w-full max-w-md rounded-2xl bg-white p-6`}>
         <div className="mb-4 flex gap-1.5">
           {STEPS.map((_, i) => (
             <span
@@ -67,7 +67,7 @@ export function TutorialOverlay() {
             type="button"
             onClick={() => (last ? finish() : setStep((s) => s + 1))}
             disabled={submitting}
-            className={`rounded-md ${palette.ink} px-4 py-2 text-sm font-medium ${palette.textInverse} transition-colors hover:bg-gray-700 disabled:opacity-60`}
+            className={recipe.btnPrimary}
           >
             {last ? "Get started" : "Next"}
           </button>

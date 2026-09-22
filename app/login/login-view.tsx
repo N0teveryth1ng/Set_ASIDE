@@ -53,7 +53,7 @@ export default function LoginView() {
 
   return (
     <main className={`flex min-h-screen items-center justify-center ${palette.canvas} p-4`}>
-      <div className={`${radius.box} w-full max-w-sm space-y-6 p-8 shadow-sm ${palette.surface} ${palette.border}`}>
+      <div className={`${radius.box} w-full max-w-sm space-y-6 p-8 ${palette.surface} ${palette.border}`}>
         <div className="space-y-1">
           <h1 className={`${type.heading} ${palette.text}`}>Set-Aside</h1>
           <p className={type.text + " " + palette.textFaint}>Sign in to your ledger</p>

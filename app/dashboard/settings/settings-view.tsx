@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { PRESETS } from "@/lib/presets";
 import { CARD_LABELS, CARD_TOKENS, type CardToken } from "@/lib/settings";
 import { palette, recipe, space, type } from "@/lib/tokens";
@@ -34,7 +35,7 @@ const btnPrimary = recipe.btnPrimary;
 const btnGhost = recipe.btnGhost;
 
 const moveBtn =
-  `rounded border ${palette.borderStrong} px-1.5 text-xs ${palette.textFaint} ${palette.surfaceHover} disabled:opacity-40`;
+  `inline-flex h-6 w-6 items-center justify-center rounded border ${palette.borderStrong} ${palette.textFaint} ${palette.surfaceHover} disabled:opacity-40`;
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -76,7 +77,7 @@ function CardRow({
         className={moveBtn}
         aria-label="Move up"
       >
-        ↑
+        <ArrowUp size={14} strokeWidth={2} />
       </button>
       <button
         type="button"
@@ -85,7 +86,7 @@ function CardRow({
         className={moveBtn}
         aria-label="Move down"
       >
-        ↓
+        <ArrowDown size={14} strokeWidth={2} />
       </button>
       <span className={`text-sm font-medium ${palette.text}`}>{CARD_LABELS[tokenName]}</span>
       <label className={`ml-auto flex items-center gap-1.5 text-sm ${palette.textSubtle}`}>
@@ -296,7 +297,7 @@ export function SettingsView({
                 className={moveBtn}
                 aria-label="Move up"
               >
-                ↑
+                <ArrowUp size={14} strokeWidth={2} />
               </button>
               <button
                 type="button"
@@ -305,7 +306,7 @@ export function SettingsView({
                 className={moveBtn}
                 aria-label="Move down"
               >
-                ↓
+                <ArrowDown size={14} strokeWidth={2} />
               </button>
               <input
                 type="text"

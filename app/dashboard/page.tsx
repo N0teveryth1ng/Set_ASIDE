@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { BookOpen } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { toLedgerEntry } from "@/lib/ledger/mapping";
 import { withoutHiddenCategories } from "@/lib/ledger/filter";
@@ -8,7 +9,7 @@ import { DEFAULT_CARDS, normalizeCards, type CardToken } from "@/lib/settings";
 import { DashboardHeader } from "./dashboard-header";
 import { TutorialOverlay } from "./tutorial-overlay";
 import { OverviewView } from "./overview-view";
-import { palette, recipe, space } from "@/lib/tokens";
+import { palette, recipe, space, type } from "@/lib/tokens";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -48,10 +49,12 @@ export default async function DashboardPage() {
       <section className={`${space.containerLg} py-10`}>
         {empty ? (
           <div className={recipe.surfaceDashed + " px-6 py-16 text-center"}>
-            <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full text-2xl ${palette.inkSoft}`}>
-              📒
+            <div
+              className={`mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full ${palette.inkSoft} ${palette.textGhost}`}
+            >
+              <BookOpen size={20} strokeWidth={2} />
             </div>
-            <h2 className={`text-lg font-semibold ${palette.text}`}>Your ledger is empty</h2>
+            <h2 className={`${type.heading} ${palette.text}`}>Your ledger is empty</h2>
             <p className={`mx-auto mt-2 max-w-md text-sm ${palette.textSubtle}`}>
               Add your first entry or import a file to start tracking income and
               expenses.

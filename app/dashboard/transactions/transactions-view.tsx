@@ -127,9 +127,9 @@ export function TransactionsView({
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-8">
         <h2 className={type.pageTitle + " " + palette.text}>Transactions</h2>
-        <p className={`${type.text} ${palette.textFaint}`}>
+        <p className={`mt-1 ${type.text} ${palette.textFaint}`}>
           {entries.length} entr{entries.length === 1 ? "y" : "ies"} · amounts in whole
           cents ($1.00 = 100)
         </p>
@@ -137,7 +137,7 @@ export function TransactionsView({
 
       {error && <p className={`${recipe.errorBoxLg} mb-4`}>{error}</p>}
 
-      <div className={`${recipe.surface} mb-8 p-4 shadow-sm`}>
+      <div className={`${recipe.surface} mb-10 p-5`}>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           <input
             type="number"
@@ -188,9 +188,9 @@ export function TransactionsView({
           </p>
         </div>
       ) : (
-        <div className={`${recipe.surface} overflow-x-auto shadow-sm`}>
+        <div className={`${recipe.surface} overflow-x-auto`}>
           <table className="w-full text-left text-sm">
-            <thead className={`border-b ${palette.inkSoft} ${type.caps} ${palette.textGhost}`}>
+            <thead className={`border-b bg-gray-50 ${type.caps} ${palette.textGhost}`}>
               <tr>
                 <th className="px-4 py-3 font-medium">Date</th>
                 <th className="px-4 py-3 font-medium">Category</th>

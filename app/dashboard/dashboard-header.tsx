@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { palette, recipe } from "@/lib/tokens";
+import { palette, recipe, type } from "@/lib/tokens";
 
 const LINKS = [
   { href: "/dashboard", label: "Overview" },
@@ -15,10 +15,10 @@ export function DashboardHeader({ email }: { email: string }) {
   const path = usePathname();
 
   return (
-    <header className={`flex flex-wrap items-center justify-between gap-y-3 border-b bg-white px-6 py-4 ${palette.border}`}>
+    <header className={`flex flex-wrap items-center justify-between gap-y-3 border-b bg-white px-6 py-3 ${palette.border}`}>
       <div className="flex flex-wrap items-center gap-6">
         <div>
-          <h1 className={`text-lg font-semibold ${palette.text}`}>Set-Aside</h1>
+          <h1 className={`${type.brand} ${palette.text}`}>Set-Aside</h1>
         </div>
         <nav className="flex flex-wrap items-center gap-1">
           {LINKS.map((link) => {

@@ -42,9 +42,7 @@ export function PresetPicker() {
             type="button"
             onClick={() => choose(preset)}
             disabled={picking !== null}
-            className={`${radius.card} ${palette.border} ${palette.surface} p-5 text-left shadow-sm transition-all ${
-              palette.borderStrong
-            } hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60`}
+            className={`${radius.card} ${palette.border} ${palette.surface} p-6 text-left transition-colors ${palette.surfaceHover} hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-60`}
           >
             <div className="flex items-center justify-between">
               <h2 className={`${type.sectionTitle} ${palette.text}`}>{preset.preset}</h2>

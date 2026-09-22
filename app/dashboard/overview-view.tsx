@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, type ReactElement } from "react";
+import { useMemo, useState, type ReactElement, type ReactNode } from "react";
+import { PiggyBank, TrendingDown, TrendingUp } from "lucide-react";
 import type { Period, CategoryTotal, TrendPoint, Totals } from "@/lib/ledger/types";
 import type { Summary } from "@/lib/summary";
 import { DEFAULT_CARDS, type CardToken } from "@/lib/settings";
@@ -39,15 +40,24 @@ function CountCard({
   label,
   value,
   tone,
+  icon,
 }: {
   label: string;
   value: string;
   tone: string;
+  icon: ReactNode;
 }) {
   return (
-    <div className={`${recipe.surface} p-5`}>
-      <p className={type.cardLabel + " " + palette.textFaint}>{label}</p>
-      <p className={`${type.cardValue} mt-2 ${tone}`}>{value}</p>
+    <div className={`${recipe.surface} ${space.card}`}>
+      <div className="flex items-center gap-2">
+        <span
+          className={`flex h-6 w-6 items-center justify-center rounded-full ${palette.inkSoft} ${palette.textGhost}`}
+        >
+          {icon}
+        </span>
+        <p className={type.cardLabel + " " + palette.textFaint}>{label}</p>
+      </div>
+      <p className={`mt-3 ${type.cardValue} ${tone}`}>{value}</p>
     </div>
   );
 }
@@ -71,20 +81,26 @@ function HeroCard({
     })
     .join(" ");
 
+  const signedNet = signed(summary.totals.netCents, summary.currency);
+
   return (
-    <div className={`${recipe.surface} p-6`}>
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className={type.cardLabel + " " + palette.textFaint}>Net Position</p>
-          <p className={`mt-2 text-4xl font-bold ${signed(summary.totals.netCents, summary.currency).tone}`}>
-            {signed(summary.totals.netCents, summary.currency).text}
+    <div className={`${recipe.surface} ${space.cardLg}`}>
+      <div className="flex flex-wrap items-start justify-between gap-6">
+        <div className="min-w-0">
+          <p className={type.caps + " " + palette.textGhost}>Net Position</p>
+          <p
+            key={`${summary.period}-${summary.totals.netCents}`}
+            className={`animate-rise mt-3 ${type.heroNumber} ${signedNet.tone}`}
+          >
+            {signedNet.text}
           </p>
-          <p className={`mt-1 text-xs ${palette.textGhost}`}>
-            {summary.totals.count} {summary.totals.count === 1 ? "entry" : "entries"} in {PERIOD_LABELS[summary.period]}
+          <p className={`mt-2 text-xs ${palette.textGhost}`}>
+            {summary.totals.count} {summary.totals.count === 1 ? "entry" : "entries"} in{" "}
+            {PERIOD_LABELS[summary.period]}
           </p>
         </div>
         <svg
-          className={`h-16 w-64 ${palette.gainStroke}`}
+          className={`h-20 w-64 ${palette.gainStroke}`}
           viewBox="0 0 100 32"
           preserveAspectRatio="none"
           aria-label="Net position trend"
@@ -99,7 +115,7 @@ function HeroCard({
           />
         </svg>
       </div>
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="mt-7 flex flex-wrap gap-2">
         {PERIOD_ORDER.map((period) => {
           const selected = summary.period === period;
           return (
@@ -121,9 +137,9 @@ function HeroCard({
 function Breakdown({ items, currency }: { items: CategoryTotal[]; currency: string }) {
   const maxAbs = Math.max(1, ...items.map((i) => Math.abs(i.totalCents)));
   return (
-    <div className={`${recipe.surface} p-5`}>
+    <div className={`${recipe.surface} ${space.card}`}>
       <h2 className={type.sectionTitle + " " + palette.text}>Breakdown by category</h2>
-      <ul className="mt-4 space-y-3">
+      <ul className="mt-5 space-y-4">
         {items.length === 0 && <li className={`${type.text} ${palette.textGhost}`}>No entries in this period.</li>}
         {items.map((item) => {
           const uncategorized = item.categoryName === "Uncategorized";
@@ -148,9 +164,9 @@ function Breakdown({ items, currency }: { items: CategoryTotal[]; currency: stri
                     {item.count} {item.count === 1 ? "entry" : "entries"}
                   </span>
                 </span>
-                <span className={`font-semibold ${tone}`}>{amount}</span>
+                <span className={`font-semibold tabular-nums ${tone}`}>{amount}</span>
               </div>
-              <div className={`mt-1 h-2 overflow-hidden rounded-full ${palette.inkSoft}`}>
+              <div className={`mt-1.5 h-2 overflow-hidden rounded-full ${palette.inkSoft}`}>
                 <div
                   className={`h-full rounded-full ${
                     uncategorized
@@ -173,9 +189,9 @@ function Breakdown({ items, currency }: { items: CategoryTotal[]; currency: stri
 function Trend({ trend, currency }: { trend: TrendPoint[]; currency: string }) {
   const maxAbs = Math.max(1, ...trend.map((p) => Math.abs(p.netCents)));
   return (
-    <div className={`${recipe.surface} p-5`}>
+    <div className={`${recipe.surface} ${space.card}`}>
       <h2 className={type.sectionTitle + " " + palette.text}>Monthly trend</h2>
-      <div className="mt-4 flex h-32 items-end gap-1.5">
+      <div className="mt-5 flex h-32 items-end gap-1.5">
         {trend.map((point) => {
           const height = maxAbs === 0 ? 0 : Math.max(2, (Math.abs(point.netCents) / maxAbs) * 100);
           const color =
@@ -261,7 +277,7 @@ export function OverviewView({
   flushPair();
 
   return (
-    <div className={space.stack}>
+    <div className={space.stackLg}>
       {error && <div className={recipe.errorBox}>{error}</div>}
       {rows}
     </div>
@@ -280,13 +296,30 @@ function singleCard(
       return <HeroCard summary={summary} pending={pending} onSelect={onSelect} />;
     case "money":
       return (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <CountCard label="Money in" value={signed(totals.inCents, summary.currency).text} tone={palette.gainText} />
-          <CountCard label="Money out" value={signed(totals.outCents, summary.currency).text} tone={palette.lossText} />
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <CountCard
+            label="Money in"
+            value={signed(totals.inCents, summary.currency).text}
+            tone={palette.gainText}
+            icon={<TrendingUp size={14} strokeWidth={2} />}
+          />
+          <CountCard
+            label="Money out"
+            value={signed(totals.outCents, summary.currency).text}
+            tone={palette.lossText}
+            icon={<TrendingDown size={14} strokeWidth={2} />}
+          />
         </div>
       );
     case "tax":
-      return <CountCard label="Tax set-aside" value={money(summary.taxSetAside, summary.currency)} tone={palette.text} />;
+      return (
+        <CountCard
+          label="Tax set-aside"
+          value={money(summary.taxSetAside, summary.currency)}
+          tone={palette.text}
+          icon={<PiggyBank size={14} strokeWidth={2} />}
+        />
+      );
     default:
       return <></>;
   }

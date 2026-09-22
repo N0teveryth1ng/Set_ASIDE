@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { Check } from "lucide-react";
 import type { ColumnMapping, ImportRow } from "@/lib/import/validate";
 import { palette, recipe, space, type } from "@/lib/tokens";
 
@@ -189,8 +190,8 @@ export function ImportView({ email }: { email: string }) {
   if (done !== null) {
     return (
       <div className={`${recipe.surface} px-6 py-16 text-center`}>
-        <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full text-2xl ${palette.gainChip}`}>
-          ✓
+        <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full ${palette.gainChip}`}>
+          <Check size={22} strokeWidth={2.5} />
         </div>
         <h2 className={type.pageTitle + " " + palette.text}>
           Imported {done} {done === 1 ? "entry" : "entries"}

@@ -83,7 +83,7 @@ export default async function ExportReportPage({
     })),
   );
 
-  const rangeLabel = `${from!} → ${to!}`;
+  const rangeLabel = `${from!} to ${to!}`;
 
   return (
     <main className={`min-h-screen bg-white px-8 py-10 ${palette.text} print:px-4`}>

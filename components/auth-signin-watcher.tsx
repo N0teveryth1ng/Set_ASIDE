@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+
+function safeNext(raw: string | null): string {
+  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  return "/dashboard";
+}
 
 export default function AuthSignInWatcher() {
-  const router = useRouter();
   const handledRef = useRef(false);
 
   useEffect(() => {
@@ -20,22 +22,31 @@ export default function AuthSignInWatcher() {
 
     if (!accessToken || !refreshToken) return;
 
-    const supabase = createClient();
     void (async () => {
-      const { error } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
-      if (error) return;
+      let ok = false;
+      try {
+        const res = await fetch("/api/auth/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accessToken, refreshToken }),
+        });
+        const json = await res.json().catch(() => null);
+        ok = res.ok && json?.ok === true;
+      } catch {
+        ok = false;
+      }
 
       history.replaceState(
         null,
         "",
         window.location.pathname + window.location.search,
       );
-      router.replace("/dashboard");
+
+      // The session cookie is now set server-side; a hard navigation ensures
+      // middleware + server components read the fresh session on first load.
+      window.location.replace(ok ? safeNext(new URLSearchParams(window.location.search).get("next")) : "/login?error=token");
     })();
-  }, [router]);
+  }, []);
 
   return null;
 }

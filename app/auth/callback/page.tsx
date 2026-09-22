@@ -42,11 +42,13 @@ function CallbackInner() {
 
       try {
         if (accessToken && refreshToken) {
-          const { error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
+          const res = await fetch("/api/auth/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ accessToken, refreshToken }),
           });
-          if (error) throw error;
+          const json = await res.json().catch(() => null);
+          if (!res.ok || json?.ok !== true) throw new Error("token exchange failed");
         } else if (code) {
           const { error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) throw error;

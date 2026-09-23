@@ -1,0 +1,12 @@
+language: "en-US"
+early_access: false
+reviews:
+  profile: "chill"
+  review_status: true
+  collapse_walkthrough: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base: "main"
+chat:
+  auto_reply: true

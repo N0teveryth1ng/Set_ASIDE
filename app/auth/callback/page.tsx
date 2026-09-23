@@ -28,9 +28,24 @@ function CallbackInner() {
 
       const next = safeNext(searchParams.get("next"));
 
-      // The implicit flow delivers tokens in the URL hash fragment, which is
-      // never sent to the server. The PKCE flow delivers them as ?code= in the
-      // query string. Both, plus ?token_hash=, are handled here client-side.
+      // Establish the session through the server route so the cookie is
+      // written server-side (the only mechanism the middleware reliably
+      // accepts on fresh navigations, e.g. a new tab or a reload). The
+      // implicit flow delivers tokens in the URL hash fragment (never sent
+      // to the server); the PKCE flow delivers them as ?code= in the query
+      // string and leaves the code_verifier in the browser, so it must be
+      // exchanged client-side first — then the real tokens are handed to
+      // the server route just like every other flow.
+      const establish = async (at: string, rt: string) => {
+        const res = await fetch("/api/auth/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accessToken: at, refreshToken: rt }),
+        });
+        const json = await res.json().catch(() => null);
+        if (!res.ok || json?.ok !== true) throw new Error("token exchange failed");
+      };
+
       const hashParams = new URLSearchParams(
         window.location.hash.length > 1 ? window.location.hash.substring(1) : "",
       );
@@ -42,22 +57,24 @@ function CallbackInner() {
 
       try {
         if (accessToken && refreshToken) {
-          const res = await fetch("/api/auth/session", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ accessToken, refreshToken }),
-          });
-          const json = await res.json().catch(() => null);
-          if (!res.ok || json?.ok !== true) throw new Error("token exchange failed");
+          await establish(accessToken, refreshToken);
         } else if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) throw error;
+          if (!data.session?.access_token || !data.session.refresh_token) {
+            throw new Error("no session from code exchange");
+          }
+          await establish(data.session.access_token, data.session.refresh_token);
         } else if (tokenHash && type) {
-          const { error } = await supabase.auth.verifyOtp({
+          const { data, error } = await supabase.auth.verifyOtp({
             type: type as "magiclink" | "email",
             token_hash: tokenHash,
           });
           if (error) throw error;
+          if (!data.session?.access_token || !data.session.refresh_token) {
+            throw new Error("no session from token verification");
+          }
+          await establish(data.session.access_token, data.session.refresh_token);
         } else {
           if (!cancelled) setStage("Missing sign-in parameters.");
           return;

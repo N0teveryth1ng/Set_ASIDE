@@ -17,6 +17,27 @@ export async function POST(request: Request) {
   }
 
   const cookieStore = await cookies();
+
+  // Converge the cookie jar before writing the fresh session. Long-lived
+  // Chrome profiles can carry stale supabase auth-token cookies from earlier
+  // sessions (base key and/or legacy `.N` chunks). RSL's chunk reader can
+  // reassemble those stale pieces into an invalid session on some requests,
+  // which surfaces as a signed-in tab next to a login screen in the same
+  // browser. Clearing every key under the current ref makes the jar
+  // deterministic on each login.
+  const supabaseRef =
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.match(/^https?:\/\/([^.]+)\.supabase\.co/)?.[1] ?? "qnlpdcoobmcytrhbgjll";
+  const authTokenKey = `sb-${supabaseRef}-auth-token`;
+  for (const { name } of cookieStore.getAll()) {
+    if (
+      name === authTokenKey ||
+      name.startsWith(`${authTokenKey}.`) ||
+      name.startsWith(`${authTokenKey}-code-verifier`)
+    ) {
+      cookieStore.set(name, "", { maxAge: 0, path: "/" });
+    }
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

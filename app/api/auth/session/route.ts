@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   // browser. Clearing every key under the current ref makes the jar
   // deterministic on each login.
   const supabaseRef =
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.match(/^https?:\/\/([^.]+)\.supabase\.co/)?.1 ?? "qnlpdcoobmcytrhbgjll";
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.match(/^https?:\/\/([^.]+)\.supabase\.co/)?.[1] ?? "qnlpdcoobmcytrhbgjll";
   const authTokenKey = `sb-${supabaseRef}-auth-token`;
   for (const { name } of cookieStore.getAll()) {
     if (

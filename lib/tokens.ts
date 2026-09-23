@@ -81,6 +81,8 @@ export const type = {
   cardValue: "text-2xl font-semibold tabular-nums",
   cardLabel: "text-sm font-medium",
   sectionTitle: "text-base font-semibold",
+  section2: "font-display text-3xl font-semibold tracking-[-0.02em]",
+  statNumber: "font-display text-4xl font-semibold tracking-[-0.02em] tabular-nums",
   heading: "font-display text-xl font-semibold tracking-tight",
   text: "text-sm",
   tiny: "text-xs",
@@ -132,4 +134,8 @@ export const recipe = {
         : `bg-gray-100 text-gray-600 ${palette.surfaceHover}`
     } disabled:opacity-50`,
   chip: `rounded-full px-2 py-0.5 text-xs font-medium`,
+
+  navLink: "rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900",
+  faqRow: `rounded-xl border ${palette.borderStrong} ${palette.surface} px-5 py-4`,
+  ctaPanel: `${radius.card} ${palette.ctaSoft} px-8 py-12 text-center`,
 } as const;

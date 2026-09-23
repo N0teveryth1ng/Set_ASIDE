@@ -42,7 +42,16 @@ export default function LoginView() {
 
   const supabase = createClient();
 
+  const clearUrlError = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (!params.has("error")) return;
+    params.delete("error");
+    const query = params.size > 0 ? `?${params.toString()}` : "";
+    router.replace(`${window.location.pathname}${query}`, { scroll: false });
+  };
+
   const signInWithGoogle = async () => {
+    clearUrlError();
     setBusy(true);
     setMessage(null);
     const { error: err } = await supabase.auth.signInWithOAuth({
@@ -55,6 +64,7 @@ export default function LoginView() {
 
   const sendMagicLink = async (event: React.FormEvent) => {
     event.preventDefault();
+    clearUrlError();
     setBusy(true);
     setMessage(null);
     const { error: err } = await supabase.auth.signInWithOtp({

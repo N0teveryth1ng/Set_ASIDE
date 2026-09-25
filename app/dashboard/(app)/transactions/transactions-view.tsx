@@ -4,6 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { parseEntryInput } from "@/lib/entry-input";
 import type { EntryRow, CategoryOption } from "./types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { palette, recipe, type } from "@/lib/tokens";
 
 interface Draft {
@@ -50,9 +59,38 @@ function draftToInput(draft: Draft) {
   });
 }
 
-const inputCls = recipe.input;
-const btnPrimary = recipe.btnPrimary;
-const btnGhost = recipe.btnGhost;
+const UNCATEGORIZED = "__uncategorized__";
+
+function CategorySelect({
+  value,
+  categories,
+  onValueChange,
+  ariaLabel,
+}: {
+  value: string;
+  categories: CategoryOption[];
+  onValueChange: (value: string) => void;
+  ariaLabel: string;
+}) {
+  return (
+    <Select
+      value={value === "" ? UNCATEGORIZED : value}
+      onValueChange={(v) => onValueChange(v === UNCATEGORIZED ? "" : v)}
+    >
+      <SelectTrigger aria-label={ariaLabel} className="w-full">
+        <SelectValue placeholder="Uncategorized" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={UNCATEGORIZED}>Uncategorized</SelectItem>
+        {categories.map((c) => (
+          <SelectItem key={c.id} value={c.id}>
+            {c.type === "IN" ? "+" : "\u2212"} {c.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
 
 export function TransactionsView({
   entries,
@@ -139,45 +177,39 @@ export function TransactionsView({
 
       <div className={`${recipe.surface} mb-10 p-5`}>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-          <input
+          <Input
             type="number"
             inputMode="numeric"
-            min="1"
-            step="1"
+            min={1}
+            step={1}
             placeholder="Amount (cents)"
             value={draft.amount}
             onChange={(e) => setDraft((d) => ({ ...d, amount: e.target.value }))}
-            className={inputCls}
+            aria-label="Amount in cents"
           />
-          <input
+          <Input
             type="date"
             value={draft.date}
             onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))}
-            className={inputCls}
+            aria-label="Date"
           />
-          <select
+          <CategorySelect
             value={draft.categoryId}
-            onChange={(e) => setDraft((d) => ({ ...d, categoryId: e.target.value }))}
-            className={inputCls}
-          >
-            <option value="">Uncategorized</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.type === "IN" ? "+" : "\u2212"} {c.name}
-              </option>
-            ))}
-          </select>
-          <input
+            categories={categories}
+            onValueChange={(categoryId) => setDraft((d) => ({ ...d, categoryId }))}
+            ariaLabel="Category"
+          />
+          <Input
             type="text"
             maxLength={500}
             placeholder="Note"
             value={draft.note}
             onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
-            className={inputCls}
+            aria-label="Note"
           />
-          <button type="button" onClick={create} disabled={busy} className={`${btnPrimary} sm:col-span-1`}>
+          <Button type="button" onClick={create} disabled={busy}>
             Add entry
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -206,72 +238,67 @@ export function TransactionsView({
                   return (
                     <tr key={entry.id} className={palette.warnSoftBg}>
                       <td className="px-4 py-2">
-                        <input
+                        <Input
                           type="date"
                           value={editDraft.date}
                           onChange={(e) =>
                             setEditDraft((d) => ({ ...d, date: e.target.value }))
                           }
-                          className={inputCls}
+                          aria-label="Edit date"
                         />
                       </td>
                       <td className="px-4 py-2">
-                        <select
+                        <CategorySelect
                           value={editDraft.categoryId}
-                          onChange={(e) =>
-                            setEditDraft((d) => ({ ...d, categoryId: e.target.value }))
+                          categories={categories}
+                          onValueChange={(categoryId) =>
+                            setEditDraft((d) => ({ ...d, categoryId }))
                           }
-                          className={inputCls}
-                        >
-                          <option value="">Uncategorized</option>
-                          {categories.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.type === "IN" ? "+" : "\u2212"} {c.name}
-                            </option>
-                          ))}
-                        </select>
+                          ariaLabel="Edit category"
+                        />
                       </td>
                       <td className="px-4 py-2">
-                        <input
+                        <Input
                           type="text"
                           maxLength={500}
                           value={editDraft.note}
                           onChange={(e) =>
                             setEditDraft((d) => ({ ...d, note: e.target.value }))
                           }
-                          className={inputCls}
+                          aria-label="Edit note"
                         />
                       </td>
                       <td className="px-4 py-2">
-                        <input
+                        <Input
                           type="number"
                           inputMode="numeric"
-                          min="1"
-                          step="1"
+                          min={1}
+                          step={1}
                           value={editDraft.amount}
                           onChange={(e) =>
                             setEditDraft((d) => ({ ...d, amount: e.target.value }))
                           }
-                          className={inputCls}
+                          aria-label="Edit amount in cents"
                         />
                       </td>
                       <td className="px-4 py-2">
                         <div className="flex justify-end gap-2">
-                          <button
+                          <Button
                             type="button"
                             onClick={saveEdit}
                             disabled={busy}
-                            className={`${btnPrimary} !px-3 !py-1`}
+                            size="sm"
                           >
                             Save
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             type="button"
+                            variant="outline"
                             onClick={() => setEditingId(null)}
-                            className={btnGhost}
+                            size="sm"
                           >
                             Cancel
-                          </button>
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -289,23 +316,26 @@ export function TransactionsView({
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-2">
-                        <button
+                        <Button
                           type="button"
+                          variant="outline"
+                          size="sm"
                           onClick={() => {
                             setEditingId(entry.id);
                             setEditDraft(toDraft(entry));
                           }}
-                          className={btnGhost}
                         >
                           Edit
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           type="button"
+                          variant="outline"
+                          size="sm"
+                          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                           onClick={() => remove(entry.id)}
-                          className={recipe.btnDanger}
                         >
                           Delete
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>

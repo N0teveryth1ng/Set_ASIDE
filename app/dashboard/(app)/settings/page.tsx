@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DEFAULT_CARDS, normalizeCards } from "@/lib/settings";
-import { DashboardHeader } from "../dashboard-header";
 import { SettingsView } from "./settings-view";
 import { palette, space } from "@/lib/tokens";
 
@@ -25,8 +24,7 @@ export default async function SettingsPage() {
   if (!settings) redirect("/dashboard/onboarding");
 
   return (
-    <main className={palette.canvas + " min-h-screen"}>
-      <DashboardHeader email={user.email ?? ""} />
+    <main className={palette.canvas}>
       <section className={`${space.containerMd} py-10`}>
         <SettingsView
           settings={{

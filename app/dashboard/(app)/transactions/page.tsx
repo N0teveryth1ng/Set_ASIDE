@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { embedToCategory } from "@/lib/ledger/mapping";
-import { DashboardHeader } from "../dashboard-header";
 import { TransactionsView } from "./transactions-view";
 import type { EntryRow, CategoryOption } from "./types";
 import { palette, space } from "@/lib/tokens";
@@ -52,8 +51,7 @@ export default async function TransactionsPage() {
   const visibleCategories = (categories ?? []).filter((c) => !c.hidden) as CategoryOption[];
 
   return (
-    <main className={palette.canvas + " min-h-screen"}>
-      <DashboardHeader email={user.email ?? ""} />
+    <main className={palette.canvas}>
       <section className={`${space.containerLg} py-10`}>
         <TransactionsView
           entries={rows}

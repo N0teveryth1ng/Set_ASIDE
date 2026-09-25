@@ -6,7 +6,7 @@ import { toLedgerEntry } from "@/lib/ledger/mapping";
 import { withoutHiddenCategories } from "@/lib/ledger/filter";
 import { buildSummary } from "@/lib/summary";
 import { DEFAULT_CARDS, normalizeCards, type CardToken } from "@/lib/settings";
-import { DashboardHeader } from "./dashboard-header";
+import { Button } from "@/components/ui/button";
 import { TutorialOverlay } from "./tutorial-overlay";
 import { OverviewView } from "./overview-view";
 import { palette, recipe, space, type } from "@/lib/tokens";
@@ -43,9 +43,7 @@ export default async function DashboardPage() {
     : DEFAULT_CARDS;
 
   return (
-    <main className={recipe.page}>
-      <DashboardHeader email={user.email ?? ""} />
-
+    <main className={palette.canvas}>
       <section className={`${space.containerLg} py-10`}>
         {empty ? (
           <div className={recipe.surfaceDashed + " px-6 py-16 text-center"}>
@@ -59,9 +57,9 @@ export default async function DashboardPage() {
               Add your first entry or import a file to start tracking income and
               expenses.
             </p>
-            <Link href="/dashboard/transactions" className={`${recipe.btnPrimaryLg} mt-5 inline-block`}>
-              Add your first entry
-            </Link>
+            <Button asChild className="mt-5">
+              <Link href="/dashboard/transactions">Add your first entry</Link>
+            </Button>
             <p className={`mt-4 text-xs ${palette.textGhost}`}>
               {categoryCount} categories from your {activePreset} preset are ready.
             </p>

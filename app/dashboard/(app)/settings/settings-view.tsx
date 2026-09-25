@@ -5,6 +5,16 @@ import { useRouter } from "next/navigation";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { PRESETS } from "@/lib/presets";
 import { CARD_LABELS, CARD_TOKENS, type CardToken } from "@/lib/settings";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { palette, recipe, space, type } from "@/lib/tokens";
 
 export interface SettingsState {
@@ -29,20 +39,38 @@ interface CategoryResponse {
   category: CategoryRow;
 }
 
-const inputCls = recipe.input;
-const labelCls = recipe.label;
-const btnPrimary = recipe.btnPrimary;
-const btnGhost = recipe.btnGhost;
-
-const moveBtn =
-  `inline-flex h-6 w-6 items-center justify-center rounded border ${palette.borderStrong} ${palette.textFaint} ${palette.surfaceHover} disabled:opacity-40`;
-
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className={`${recipe.surface} p-5`}>
       <h2 className={type.sectionTitle + " " + palette.text}>{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
+  );
+}
+
+function MoveButton({
+  onClick,
+  disabled,
+  label,
+  children,
+}: {
+  onClick: () => void;
+  disabled: boolean;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size="icon"
+      className="h-6 w-6 border-gray-300 text-gray-400 hover:bg-gray-50"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+    >
+      {children}
+    </Button>
   );
 }
 
@@ -70,24 +98,20 @@ function CardRow({
         visible ? palette.border : `${palette.borderStrong} border-dashed ${palette.inkSoft} opacity-70`
       }`}
     >
-      <button
-        type="button"
+      <MoveButton
         onClick={() => onMove(-1)}
         disabled={!visible || isFirst || busy}
-        className={moveBtn}
-        aria-label="Move up"
+        label="Move up"
       >
         <ArrowUp size={14} strokeWidth={2} />
-      </button>
-      <button
-        type="button"
+      </MoveButton>
+      <MoveButton
         onClick={() => onMove(1)}
         disabled={!visible || isLast || busy}
-        className={moveBtn}
-        aria-label="Move down"
+        label="Move down"
       >
         <ArrowDown size={14} strokeWidth={2} />
-      </button>
+      </MoveButton>
       <span className={`text-sm font-medium ${palette.text}`}>{CARD_LABELS[tokenName]}</span>
       <label className={`ml-auto flex items-center gap-1.5 text-sm ${palette.textSubtle}`}>
         <input
@@ -290,29 +314,25 @@ export function SettingsView({
                   : palette.border
               }`}
             >
-              <button
-                type="button"
+              <MoveButton
                 onClick={() => moveCategory(index, -1)}
                 disabled={index === 0 || busy}
-                className={moveBtn}
-                aria-label="Move up"
+                label="Move up"
               >
                 <ArrowUp size={14} strokeWidth={2} />
-              </button>
-              <button
-                type="button"
+              </MoveButton>
+              <MoveButton
                 onClick={() => moveCategory(index, 1)}
                 disabled={index === categories.length - 1 || busy}
-                className={moveBtn}
-                aria-label="Move down"
+                label="Move down"
               >
                 <ArrowDown size={14} strokeWidth={2} />
-              </button>
-              <input
+              </MoveButton>
+              <Input
                 type="text"
                 maxLength={50}
                 defaultValue={category.name}
-                className={`${inputCls} !w-56 font-medium`}
+                className="w-56 font-medium"
                 onBlur={(e) => {
                   const value = e.target.value.trim();
                   if (value && value !== category.name) patchCategory(category.id, { name: value });
@@ -338,38 +358,41 @@ export function SettingsView({
           ))}
         </ul>
 
-        <div className={`mt-4 flex flex-wrap items-end gap-2 border-t pt-4 ${palette.divideStrong}`}>
+        <div className={`mt-4 flex flex-wrap items-end gap-3 border-t pt-4 ${palette.divideStrong}`}>
           <div>
-            <label className={labelCls} htmlFor="new-cat-name">
+            <Label htmlFor="new-cat-name" className={palette.textMuted}>
               New category
-            </label>
-            <input
+            </Label>
+            <Input
               id="new-cat-name"
               type="text"
               maxLength={50}
               placeholder="e.g. Subscriptions"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              className={inputCls}
+              className="mt-1.5"
             />
           </div>
           <div>
-            <label className={labelCls} htmlFor="new-cat-type">
+            <Label htmlFor="new-cat-type" className={palette.textMuted}>
               Type
-            </label>
-            <select
-              id="new-cat-type"
+            </Label>
+            <Select
               value={newType}
-              onChange={(e) => setNewType(e.target.value as "IN" | "OUT")}
-              className={inputCls}
+              onValueChange={(value) => setNewType(value as "IN" | "OUT")}
             >
-              <option value="OUT">Expense (money out)</option>
-              <option value="IN">Income (money in)</option>
-            </select>
+              <SelectTrigger id="new-cat-type" className="mt-1.5 w-52">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="OUT">Expense (money out)</SelectItem>
+                <SelectItem value="IN">Income (money in)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <button type="button" onClick={addCategory} disabled={busy} className={btnPrimary}>
+          <Button type="button" onClick={addCategory} disabled={busy}>
             Add
-          </button>
+          </Button>
         </div>
       </Section>
 
@@ -379,23 +402,23 @@ export function SettingsView({
         </p>
         <div className="mt-3 flex items-end gap-2">
           <div>
-            <label className={labelCls} htmlFor="tax-rate">
+            <Label htmlFor="tax-rate" className={palette.textMuted}>
               Rate (%)
-            </label>
-            <input
+            </Label>
+            <Input
               id="tax-rate"
               type="number"
-              min="0"
-              max="100"
-              step="0.5"
+              min={0}
+              max={100}
+              step={0.5}
               value={taxInput}
               onChange={(e) => setTaxInput(e.target.value)}
-              className={`${inputCls} !w-32`}
+              className="mt-1.5 w-32"
             />
           </div>
-          <button type="button" onClick={saveTaxRate} disabled={busy} className={btnPrimary}>
+          <Button type="button" onClick={saveTaxRate} disabled={busy}>
             Save
-          </button>
+          </Button>
         </div>
       </Section>
 
@@ -404,21 +427,25 @@ export function SettingsView({
           Switching presets merges that preset&apos;s categories into your list
           (existing categories are kept).
         </p>
-        <select
+        <Select
           value={settings.activePreset ?? "Custom"}
-          onChange={(e) => switchPreset(e.target.value)}
+          onValueChange={(value) => switchPreset(value)}
           disabled={busy}
-          className={`${inputCls} !w-64`}
         >
-          <option value="Custom" disabled>
-            Custom
-          </option>
-          {PRESETS.map((p) => (
-            <option key={p.preset} value={p.preset}>
-              {p.preset}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="mt-3 w-64">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Custom" disabled>
+              Custom
+            </SelectItem>
+            {PRESETS.map((p) => (
+              <SelectItem key={p.preset} value={p.preset}>
+                {p.preset}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </Section>
 
       <Section title="Overview cards">
@@ -477,39 +504,37 @@ function ExportControls({
   return (
     <div className="mt-3 flex flex-wrap items-end gap-2">
       <div>
-        <label className={labelCls} htmlFor="export-from">
+        <Label htmlFor="export-from" className={palette.textMuted}>
           From
-        </label>
-        <input
+        </Label>
+        <Input
           id="export-from"
           type="date"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
-          className={inputCls}
+          className="mt-1.5"
         />
       </div>
       <div>
-        <label className={labelCls} htmlFor="export-to">
+        <Label htmlFor="export-to" className={palette.textMuted}>
           To
-        </label>
-        <input
+        </Label>
+        <Input
           id="export-to"
           type="date"
           value={to}
           onChange={(e) => setTo(e.target.value)}
-          className={inputCls}
+          className="mt-1.5"
         />
       </div>
-      <button type="button" onClick={() => onDownload(from, to)} disabled={busy} className={btnPrimary}>
+      <Button type="button" onClick={() => onDownload(from, to)} disabled={busy}>
         Download CSV
-      </button>
-      <a
-        href={`/dashboard/export?${range}`}
-        target="_blank"
-        className={`${btnGhost} text-center`}
-      >
-        Printable report
-      </a>
+      </Button>
+      <Button variant="outline" asChild>
+        <a href={`/dashboard/export?${range}`} target="_blank">
+          Printable report
+        </a>
+      </Button>
     </div>
   );
 }

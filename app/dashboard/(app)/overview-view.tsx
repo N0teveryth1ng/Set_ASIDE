@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactElement, type ReactNode } from "react";
+import { useId, useMemo, useState, type ReactElement, type ReactNode } from "react";
 import { PiggyBank, TrendingDown, TrendingUp } from "lucide-react";
 import type { Period, CategoryTotal, TrendPoint, Totals } from "@/lib/ledger/types";
 import type { Summary } from "@/lib/summary";
@@ -73,13 +73,18 @@ function HeroCard({
 }) {
   const nets = summary.trend.map((p) => p.netCents);
   const maxAbs = Math.max(1, ...nets.map((n) => Math.abs(n)));
-  const points = nets
-    .map((net, i) => {
-      const x = (i / Math.max(1, nets.length - 1)) * 100;
-      const y = 16 - (net / maxAbs) * 14;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(" ");
+  const coords = nets.map((net, i) => {
+    const x = (i / Math.max(1, nets.length - 1)) * 100;
+    const y = 16 - (net / maxAbs) * 14;
+    return { x, y };
+  });
+  const linePoints = coords.map(({ x, y }) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  const areaPoints =
+    coords.length > 1
+      ? `${coords[0].x.toFixed(1)},32 ${linePoints} ${coords[coords.length - 1].x.toFixed(1)},32`
+      : "";
+  const current = coords[coords.length - 1];
+  const gradId = useId().replace(/[:]/g, "");
 
   const signedNet = signed(summary.totals.netCents, summary.currency);
 
@@ -105,14 +110,43 @@ function HeroCard({
           preserveAspectRatio="none"
           aria-label="Net position trend"
         >
+          <defs>
+            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="currentColor" stopOpacity="0.28" />
+              <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <line
+            x1="0"
+            y1="16"
+            x2="100"
+            y2="16"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            strokeOpacity="0.2"
+            strokeDasharray="2 2"
+          />
+          {areaPoints && (
+            <polygon points={areaPoints} fill={`url(#${gradId})`} stroke="none" />
+          )}
           <polyline
-            points={points}
+            points={linePoints}
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
+          {coords.length > 0 && (
+            <circle
+              cx={current.x}
+              cy={current.y}
+              r="2.4"
+              fill="currentColor"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="1"
+            />
+          )}
         </svg>
       </div>
       <div className="mt-7 flex flex-wrap gap-2">
@@ -305,7 +339,7 @@ function singleCard(
           />
           <CountCard
             label="Money out"
-            value={signed(totals.outCents, summary.currency).text}
+            value={`\u2212${money(totals.outCents, summary.currency)}`}
             tone={palette.lossText}
             icon={<TrendingDown size={14} strokeWidth={2} />}
           />

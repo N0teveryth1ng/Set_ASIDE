@@ -222,7 +222,7 @@ export function TransactionsView({
       ) : (
         <div className={`${recipe.surface} overflow-x-auto`}>
           <table className="w-full text-left text-sm">
-            <thead className={`border-b bg-gray-50 ${type.caps} ${palette.textGhost}`}>
+            <thead className={`border-b bg-gray-50 dark:bg-gray-800/60 ${type.caps} ${palette.textGhost}`}>
               <tr>
                 <th className="px-4 py-3 font-medium">Date</th>
                 <th className="px-4 py-3 font-medium">Category</th>

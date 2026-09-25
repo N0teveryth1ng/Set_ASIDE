@@ -17,7 +17,7 @@ export default function LandingNav() {
   const close = () => setOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-gray-50/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b bg-gray-50/90 backdrop-blur dark:bg-gray-950/90">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <Link href="/" className={`${type.brand} ${palette.text}`}>
           Set-Aside
@@ -45,14 +45,14 @@ export default function LandingNav() {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label="Toggle menu"
-          className="rounded-md border border-gray-300 bg-white p-2 text-gray-700 md:hidden"
+          className="rounded-md border border-gray-300 bg-white p-2 text-gray-700 md:hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
         >
           {open ? <X size={18} aria-hidden /> : <Menu size={18} aria-hidden />}
         </button>
       </div>
 
       {open && (
-        <div className="border-t border-gray-200 bg-white px-6 pb-6 pt-3 md:hidden">
+        <div className="border-t border-gray-200 bg-white px-6 pb-6 pt-3 md:hidden dark:border-gray-800 dark:bg-gray-900">
           <nav className="flex flex-col" aria-label="Landing sections (mobile)">
             {SECTIONS.map((section) => (
               <a

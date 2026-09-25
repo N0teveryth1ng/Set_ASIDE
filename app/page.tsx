@@ -130,7 +130,7 @@ export default function Home() {
           <SectionTitle>Built around the three numbers you should care about</SectionTitle>
           <div className="mt-8 grid gap-px overflow-hidden rounded-2xl border sm:grid-cols-3">
             {FEATURES.map((feature) => (
-              <div key={feature.title} className={`bg-white p-6`}>
+              <div key={feature.title} className={`bg-white p-6 dark:bg-gray-900`}>
                 <feature.icon size={18} strokeWidth={2} className={palette.textGhost} />
                 <h3 className={`mt-4 ${type.sectionTitle} ${palette.text}`}>{feature.title}</h3>
                 <p className={`mt-2 ${type.text} leading-relaxed ${palette.textSubtle}`}>
@@ -170,7 +170,7 @@ export default function Home() {
               </div>
               <svg
                 viewBox="0 0 200 80"
-                className="mb-1 h-24 w-full text-gray-300 sm:w-48"
+                className="mb-1 h-24 w-full text-gray-300 dark:text-gray-700 sm:w-48"
                 aria-hidden
                 preserveAspectRatio="none"
               >
@@ -251,7 +251,7 @@ export default function Home() {
                   { href: "#faq", label: "FAQ" },
                 ].map((item) => (
                   <li key={item.href}>
-                    <a href={item.href} className="text-gray-600 hover:text-gray-900">
+                    <a href={item.href} className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
                       {item.label}
                     </a>
                   </li>
@@ -262,12 +262,12 @@ export default function Home() {
               <p className={`${type.caps} ${palette.textGhost}`}>Account</p>
               <ul className="mt-3 space-y-2 text-sm">
                 <li>
-                  <Link href="/login" className="text-gray-600 hover:text-gray-900">
+                  <Link href="/login" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
                     Log in
                   </Link>
                 </li>
                 <li>
-                  <Link href="/login" className="text-gray-600 hover:text-gray-900">
+                  <Link href="/login" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
                     Get started
                   </Link>
                 </li>

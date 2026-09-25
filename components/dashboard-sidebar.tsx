@@ -59,7 +59,7 @@ export function DashboardSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="uppercase tracking-wide text-gray-500">
+          <SidebarGroupLabel className="uppercase tracking-wide text-gray-500 dark:text-gray-400">
             Dashboard
           </SidebarGroupLabel>
           <SidebarGroupContent>

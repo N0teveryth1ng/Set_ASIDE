@@ -41,7 +41,7 @@ export function TutorialOverlay() {
 
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${palette.inkOverlay}`}>
-      <div className={`w-full max-w-md rounded-2xl bg-white p-6`}>
+      <div className={`w-full max-w-md rounded-2xl bg-white p-6 dark:bg-gray-900`}>
         <div className="mb-4 flex gap-1.5">
           {STEPS.map((_, i) => (
             <span
@@ -59,7 +59,7 @@ export function TutorialOverlay() {
             type="button"
             onClick={finish}
             disabled={submitting}
-            className={`text-sm font-medium ${palette.textGhost} transition-colors hover:text-gray-600 disabled:opacity-60`}
+            className={`text-sm font-medium ${palette.textGhost} transition-colors hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-60`}
           >
             Skip tutorial
           </button>

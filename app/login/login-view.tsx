@@ -156,7 +156,7 @@ export default function LoginView() {
         </form>
 
         <p className={`mt-8 border-t pt-5 text-center ${type.tiny} ${palette.textFaint}`}>
-          <Link href="/" className="text-gray-600 hover:text-gray-900">
+          <Link href="/" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
             ← Back to home
           </Link>
         </p>

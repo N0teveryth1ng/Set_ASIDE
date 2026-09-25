@@ -1,0 +1,85 @@
+#============================== messy-with-header.csv ======================================
+
+LEGACY (pre-fix) behavior
+  fixed skipRows=1, header guess = {"amount":1,"date":0,"category":2,"note":3} (hasHeader ON by default)
+  row  2 | amt= 120000 date=2026-08-03 => ok
+  row  3 | amt=   3590 date=NULL       => BLOCKED
+  row  4 | amt=   2500 date=NULL       => BLOCKED
+  row  5 | amt=   NULL date=NULL       => BLOCKED
+  row  6 | amt=  64000 date=NULL       => BLOCKED
+  row  7 | amt=   9900 date=NULL       => BLOCKED
+  row  8 | amt=   NULL date=NULL       => BLOCKED
+  row  9 | amt=   1499 date=NULL       => BLOCKED
+
+NEW auto-detect
+  hasHeader=true  mapping={"amount":1,"date":0,"category":2,"note":3}
+  raw cell sweep vs new parsers:
+  row  1 | header row — ["Transaction Date","Paid (USD)","Merchant","Description"]
+  row  2 | amt=1200.00   date=2026-08-03 | raw=["2026-08-03","1200.00","Acme Corp","Client design invoice"]
+  row  3 | amt=35.90     date=2026-05-09 | raw=["05-09-2026","35.90","Figma","Monthly plan"]
+  row  4 | amt=25.00     date=2026-09-05 | raw=["05 September 2026","25.00","Cafe Nero","Coffee with client"]
+  row  5 | amt=-89.00    date=2026-08-18 | raw=["18.08.2026","-89.00","Amazon","Camera SD card"]
+  row  6 | amt=640.00    date=2026-09-12 | raw=["Sep 12, 2026","640.00","Sponsor Payments","Brand deal"]
+  row  7 | amt=99.00     date=2026-09-01 | raw=["2026/09/01","99.00","RenderGarden","Render credits"]
+  row  8 | amt=-12.50    date=2026-08-13 | raw=["13-08-2026","(12,50)","Twilio","Bulk SMS"]
+  row  9 | amt=14.99     date=2026-08-30 | raw=["30-08-2026","14.99","-","Netflix"]
+
+  prepared rows (8):
+    L 2 warning amt= 120000 date=2026-08-03 cat=Acme Corp        [category] "Acme Corp" is not one of your categories — this row will import as Uncategorized (counts as an expense)
+    L 3 warning amt=   3590 date=2026-05-09 cat=Figma            [category] "Figma" is not one of your categories — this row will import as Uncategorized (counts as an expense)
+    L 4 warning amt=   2500 date=2026-09-05 cat=Cafe Nero        [category] "Cafe Nero" is not one of your categories — this row will import as Uncategorized (counts as an expense)
+    L 5 warning amt=   8900 date=2026-08-18 cat=Amazon           [category] "Amazon" is not one of your categories — this row will import as Uncategorized (counts as an expense) [amount] Negative amount — imported as its absolute value; the category type decides whether it counts as money in or out
+    L 6 warning amt=  64000 date=2026-09-12 cat=Sponsor Payments [category] "Sponsor Payments" is not one of your categories — this row will import as Uncategorized (counts as an expense)
+    L 7 warning amt=   9900 date=2026-09-01 cat=RenderGarden     [category] "RenderGarden" is not one of your categories — this row will import as Uncategorized (counts as an expense)
+    L 8 warning amt=   1250 date=2026-08-13 cat=Twilio           [category] "Twilio" is not one of your categories — this row will import as Uncategorized (counts as an expense) [amount] Negative amount — imported as its absolute value; the category type decides whether it counts as money in or out
+    L 9 warning amt=   1499 date=2026-08-30 cat=-                [category] "-" is not one of your categories — this row will import as Uncategorized (counts as an expense)
+#============================== messy-no-header.csv ======================================
+
+LEGACY (pre-fix) behavior
+  fixed skipRows=1, header guess = {"amount":-1,"date":-1,"category":-1,"note":-1} (hasHeader ON by default)
+  row  2 | amt=   NULL date=NULL       => BLOCKED
+  row  3 | amt=   NULL date=NULL       => BLOCKED
+  row  4 | amt=   NULL date=NULL       => BLOCKED
+  row  5 | amt=   NULL date=NULL       => BLOCKED
+  row  6 | amt=   NULL date=NULL       => BLOCKED
+  row  7 | amt=   NULL date=NULL       => BLOCKED
+
+NEW auto-detect
+  hasHeader=false  mapping={"amount":1,"date":2,"category":null,"note":0}
+  raw cell sweep vs new parsers:
+  row  1 | amt=1250.00   date=2026-07-21 | raw=["Device test rig","1250","2026-07-21"]
+  row  2 | amt=2500.00   date=2026-08-14 | raw=["Invoice payment","2500","14-08-2026"]
+  row  3 | amt=179.00    date=2026-09-05 | raw=["New lens","179.00","05 September 2026"]
+  row  4 | amt=20.50     date=2026-08-18 | raw=["Shipping fee","20.50","18.08.2026"]
+  row  5 | amt=-35.90    date=2026-09-12 | raw=["Refund from supplier","-35.90","Sep 12, 2026"]
+  row  6 | amt=4200.00   date=2026-09-05 | raw=["Etsy store kit","4200","2026/09/05"]
+  row  7 | amt=89.99     date=2025-12-31 | raw=["Wire transfer","89.99","31-12-2025"]
+
+  prepared rows (7):
+    L 1 ok      amt= 125000 date=2026-07-21 cat=unmapped         
+    L 2 ok      amt= 250000 date=2026-08-14 cat=unmapped         
+    L 3 ok      amt=  17900 date=2026-09-05 cat=unmapped         
+    L 4 ok      amt=   2050 date=2026-08-18 cat=unmapped         
+    L 5 warning amt=   3590 date=2026-09-12 cat=unmapped         [amount] Negative amount — imported as its absolute value; the category type decides whether it counts as money in or out
+    L 6 ok      amt= 420000 date=2026-09-05 cat=unmapped         
+    L 7 ok      amt=   8999 date=2025-12-31 cat=unmapped         
+#============================== messy-semicolon.csv ======================================
+
+LEGACY (pre-fix) behavior
+  fixed skipRows=1, header guess = {"amount":-1,"date":-1,"category":-1,"note":-1} (hasHeader ON by default)
+  row  2 | amt=   NULL date=NULL       => BLOCKED
+  row  3 | amt=   NULL date=NULL       => BLOCKED
+  row  4 | amt=   NULL date=NULL       => BLOCKED
+
+NEW auto-detect
+  hasHeader=true  mapping={"amount":2,"date":0,"category":null,"note":1}
+  raw cell sweep vs new parsers:
+  row  1 | header row — ["Valuta","Omschrijving","Bedrag"]
+  row  2 | amt=-25.00    date=2026-07-01 | raw=["2026-07-01","Abonnement SaaS","-25,00"]
+  row  3 | amt=1200.00   date=2026-07-15 | raw=["2026-07-15","Klantbetaling","1200,00"]
+  row  4 | amt=-89.50    date=2026-06-29 | raw=["29-06-2026","Kantoorartikelen","(89,50)"]
+
+  prepared rows (3):
+    L 2 warning amt=   2500 date=2026-07-01 cat=unmapped         [amount] Negative amount — imported as its absolute value; the category type decides whether it counts as money in or out
+    L 3 ok      amt= 120000 date=2026-07-15 cat=unmapped         
+    L 4 warning amt=   8950 date=2026-06-29 cat=unmapped         [amount] Negative amount — imported as its absolute value; the category type decides whether it counts as money in or out

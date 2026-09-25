@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { parseImportFile } from "@/lib/import/parse";
-import { prepareImportRows, type ColumnMapping } from "@/lib/import/validate";
+import {
+  detectHeaderAndMapping,
+  prepareImportRows,
+  type ColumnMapping,
+} from "@/lib/import/validate";
 
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 
@@ -29,15 +33,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "File must be 2 MB or smaller" }, { status: 400 });
   }
 
+  const useAuto = form.get("useAuto") === "1";
+
   let mapping: ColumnMapping;
-  try {
-    mapping = JSON.parse(String(form.get("mapping") ?? "")) as ColumnMapping;
-  } catch {
-    return NextResponse.json({ error: "Mapping is required" }, { status: 400 });
-  }
-  const skipRows = Number(form.get("skipRows") ?? 0);
-  if (!Number.isInteger(skipRows) || skipRows < 0) {
-    return NextResponse.json({ error: "skipRows must be a non-negative integer" }, { status: 400 });
+  let skipRows: number;
+  if (useAuto) {
+    mapping = { amount: 0, date: 1, category: null, note: null };
+    skipRows = 0;
+  } else {
+    try {
+      mapping = JSON.parse(String(form.get("mapping") ?? "")) as ColumnMapping;
+    } catch {
+      return NextResponse.json({ error: "Mapping is required" }, { status: 400 });
+    }
+    skipRows = Number(form.get("skipRows") ?? 0);
+    if (!Number.isInteger(skipRows) || skipRows < 0) {
+      return NextResponse.json({ error: "skipRows must be a non-negative integer" }, { status: 400 });
+    }
   }
 
   const ext = file.name.split(".").pop()?.toLowerCase();
@@ -53,6 +65,12 @@ export async function POST(request: Request) {
     .eq("userId", user.id)
     .order("name");
 
+  const auto = detectHeaderAndMapping(rows, categories ?? []);
+  if (useAuto) {
+    mapping = auto.mapping;
+    skipRows = auto.hasHeader ? 1 : 0;
+  }
+
   const prepared = prepareImportRows(rows, mapping, skipRows, categories ?? []);
 
   return NextResponse.json({
@@ -61,6 +79,7 @@ export async function POST(request: Request) {
     firstRow: rows[0] ?? [],
     parsedRows: rows,
     categories: categories ?? [],
+    auto,
     rows: prepared,
     summary: {
       total: prepared.length,

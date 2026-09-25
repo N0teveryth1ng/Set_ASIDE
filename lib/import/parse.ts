@@ -11,9 +11,8 @@ function cleanCell(value: unknown): string {
   return String(value).replace(/\uFEFF/g, "").trim();
 }
 
-export function parseCsvTable(content: string, delimiter = ","): string[][] {
+export function parseCsvTable(content: string): string[][] {
   const parsed = Papa.parse<(string | number)[]>(content, {
-    delimiter: delimiter || ",",
     skipEmptyLines: false,
   });
   return (parsed.data ?? []).map((row) => row.map(cleanCell));

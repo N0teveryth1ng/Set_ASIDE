@@ -40,8 +40,22 @@ const NAV: NavItem[] = [
 ];
 
 function DashboardSidebarToggle() {
-  const { state, toggleSidebar } = useSidebar();
+  const { state, toggleSidebar, isMobile } = useSidebar();
   const collapsed = state === "collapsed";
+
+  if (isMobile) {
+    return (
+      <button
+        type="button"
+        onClick={toggleSidebar}
+        aria-label="Close sidebar"
+        title="Close sidebar"
+        className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring dark:text-gray-400"
+      >
+        <PanelLeftClose className="h-4 w-4" />
+      </button>
+    );
+  }
 
   return (
     <button
@@ -71,7 +85,7 @@ export function DashboardSidebar() {
           <Link
             href="/dashboard"
             onClick={() => setOpenMobile(false)}
-            className="flex min-w-0 items-center gap-2 group-data-[collapsible=icon]:sr-only"
+            className="flex min-w-0 items-center gap-2 group-data-[collapsible=icon]:hidden"
           >
             <span
               className={`flex h-7 w-7 items-center justify-center rounded-md text-white ${palette.cta} font-display text-sm font-semibold`}

@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { palette, recipe, space, type } from "@/lib/tokens";
+import { useTheme } from "@/lib/theme";
 
 export interface SettingsState {
   taxRate: number;
@@ -64,7 +65,7 @@ function MoveButton({
       type="button"
       variant="outline"
       size="icon"
-      className="h-6 w-6 border-gray-300 text-gray-400 hover:bg-gray-50"
+      className="h-6 w-6 border-gray-300 text-gray-400 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-500 dark:hover:bg-gray-800"
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
@@ -134,6 +135,7 @@ export function SettingsView({
   categories: CategoryRow[];
 }) {
   const router = useRouter();
+  const { theme: themeChoice, setTheme } = useTheme();
   const [settings, setSettings] = useState<SettingsState>(initial);
   const [categories, setCategories] = useState<CategoryRow[]>(initialCategories);
   const [busy, setBusy] = useState(false);
@@ -302,6 +304,26 @@ export function SettingsView({
       </div>
 
       {error && <p className={recipe.errorBoxLg}>{error}</p>}
+
+      <Section title="Appearance">
+        <p className={`${type.text} ${palette.textGhost}`}>
+          System follows your device&apos;s setting. Your choice is remembered on
+          this browser.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {(["light", "dark", "system"] as const).map((choice) => (
+            <button
+              key={choice}
+              type="button"
+              disabled={busy}
+              onClick={() => setTheme(choice)}
+              className={recipe.pillToggle(themeChoice === choice)}
+            >
+              {choice === "light" ? "Light" : choice === "dark" ? "Dark" : "System"}
+            </button>
+          ))}
+        </div>
+      </Section>
 
       <Section title="Categories">
         <ul className="space-y-2">

@@ -34,8 +34,8 @@ export const palette = {
   text: "text-gray-900 dark:text-gray-100",
   textMuted: "text-gray-700 dark:text-gray-300",
   textSubtle: "text-gray-600 dark:text-gray-400",
-  textFaint: "text-gray-500 dark:text-gray-500",
-  textGhost: "text-gray-400 dark:text-gray-600",
+  textFaint: "text-gray-500 dark:text-gray-400",
+  textGhost: "text-gray-400 dark:text-gray-400",
   textInverse: "text-white",
 
   gainText: "text-emerald-600 dark:text-emerald-400",

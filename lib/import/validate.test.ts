@@ -1,6 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseAmountCell, parseDateCell, prepareImportRows, validateImportInputs, type ImportCategory } from "./validate.ts";
+import {
+  detectHeaderAndMapping,
+  parseAmountCell,
+  parseAmountCellSigned,
+  parseDateCell,
+  prepareImportRows,
+  validateImportInputs,
+  type ImportCategory,
+} from "./validate.ts";
 
 const CATEGORIES: ImportCategory[] = [
   { id: "c1", name: "Brand Deals", type: "IN" },
@@ -29,6 +37,37 @@ test("parseAmountCell: invalid inputs are rejected (never silently wrong)", () =
   assert.equal(parseAmountCell("12.5.5"), null);
   assert.equal(parseAmountCell("0"), null);
   assert.equal(parseAmountCell("1,2,3.4"), null); // malformed grouping
+  assert.equal(parseAmountCell("(1,234.56)"), null); // parens read as a sign
+});
+
+test("parseAmountCellSigned: signs, parens, currency symbols, and trailing minus", () => {
+  assert.deepEqual(parseAmountCellSigned("1200"), { cents: 120000, negative: false });
+  assert.deepEqual(parseAmountCellSigned("$1,234.56"), { cents: 123456, negative: false });
+  assert.deepEqual(parseAmountCellSigned("-45.00"), { cents: 4500, negative: true });
+  assert.deepEqual(parseAmountCellSigned("50.00-"), { cents: 5000, negative: true });
+  assert.deepEqual(parseAmountCellSigned("(12,50)"), { cents: 1250, negative: true });
+  assert.deepEqual(parseAmountCellSigned("25,00 EUR"), { cents: 2500, negative: false });
+  assert.equal(parseAmountCellSigned("USD"), null);
+  assert.equal(parseAmountCellSigned("n/a"), null);
+});
+
+test("parseDateCell: European day-first, dot-separated, and year-first variants", () => {
+  assert.equal(parseDateCell("31-12-2025"), "2025-12-31");
+  assert.equal(parseDateCell("31.12.2025"), "2025-12-31");
+  assert.equal(parseDateCell("15/9/2026"), "2026-09-15");
+  assert.equal(parseDateCell("13-12-2025"), "2025-12-13"); // day-first only when day > 12
+  assert.equal(parseDateCell("2025/09/05"), "2025-09-05");
+  assert.equal(parseDateCell("2026.09.15"), "2026-09-15");
+  assert.equal(parseDateCell("9/15/26"), "2026-09-15");
+  assert.equal(parseDateCell("31-12-84"), "1984-12-31"); // 2-digit year > 50 -> 19xx
+});
+
+test("parseDateCell: written-out months", () => {
+  assert.equal(parseDateCell("Sep 5, 2025"), "2025-09-05");
+  assert.equal(parseDateCell("September 5, 2025"), "2025-09-05");
+  assert.equal(parseDateCell("5 Sept 2025"), "2025-09-05");
+  assert.equal(parseDateCell("05 December 2025"), "2025-12-05");
+  assert.equal(parseDateCell("05 dec 25"), "2025-12-05");
 });
 
 test("parseDateCell: ISO, slashed, ISO-with-time, dd/mm swap, and bogus dates", () => {
@@ -75,8 +114,9 @@ test("prepareImportRows: messy CSV flags errors, warnings, and blank rows explic
   const out = prepareImportRows(rows, MAP, 1, CATEGORIES);
   assert.equal(out.length, 6);
   assert.equal(out[0].status, "ok");
-  assert.equal(out[1].status, "error");
-  assert.ok(out[1].flags.some((f) => f.message.includes("positive integer")));
+  assert.equal(out[1].status, "warning");
+  assert.equal(out[1].amountCents, 5000); // -50 imported as magnitude 5000
+  assert.ok(out[1].flags.some((f) => f.message.includes("Negative amount")));
   assert.equal(out[2].status, "error");
   assert.ok(out[2].flags.some((f) => f.message.includes("date")));
   assert.equal(out[3].status, "warning");
@@ -114,4 +154,39 @@ test("validateImportInputs: a single invalid input invalidates the batch", () =>
   assert.equal(res.valid, false);
   assert.equal(res.invalid.length, 1);
   assert.equal(res.invalid[0].index, 1);
+});
+
+test("detectHeaderAndMapping: messy headers auto-map by name and content", () => {
+  const rows = [
+    ["Transaction Date", "Paid (USD)", "Merchant", "Description"],
+    ["2026-09-15", "1200.00", "Acme Inc", "Client invoice"],
+    ["31-12-2025", "-45.00", "Figma", "Design tool"],
+  ];
+  const { hasHeader, mapping } = detectHeaderAndMapping(rows, CATEGORIES);
+  assert.equal(hasHeader, true);
+  assert.equal(mapping.date, 0);
+  assert.equal(mapping.amount, 1);
+  assert.equal(mapping.category, 2);
+  assert.equal(mapping.note, 3);
+});
+
+test("detectHeaderAndMapping: headerless file flips to data and maps by content", () => {
+  const rows = [
+    ["2026-09-15", "1200", "Client invoice"],
+    ["2026-09-16", "75", "Coffee"],
+    ["05 September 2025", "3200", "Sponsor payment"],
+  ];
+  const { hasHeader, mapping } = detectHeaderAndMapping(rows, CATEGORIES);
+  assert.equal(hasHeader, false);
+  assert.equal(mapping.date, 0);
+  assert.equal(mapping.amount, 1);
+  assert.equal(mapping.note, 2);
+});
+
+test("detectHeaderAndMapping: a single data row is never mistaken for a header", () => {
+  const rows = [["2026-09-15", "1200", "Client invoice"]];
+  const { hasHeader, mapping } = detectHeaderAndMapping(rows, CATEGORIES);
+  assert.equal(hasHeader, false);
+  assert.equal(mapping.date, 0);
+  assert.equal(mapping.amount, 1);
 });

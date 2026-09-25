@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import type { ColumnMapping, ImportRow } from "@/lib/import/validate";
+import { FIELD_PATTERNS, type FieldKey } from "@/lib/import/validate";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -21,13 +22,12 @@ interface PreviewResponse {
   firstRow: string[];
   parsedRows: string[][];
   categories: { id: string; name: string; type: "IN" | "OUT" }[];
+  auto?: { hasHeader: boolean; mapping: ColumnMapping };
   rows: ImportRow[];
   summary: { total: number; ok: number; warning: number; error: number; blank: number };
 }
 
-type Field = "amount" | "date" | "category" | "note";
-
-const FIELDS: { key: Field; label: string }[] = [
+const FIELDS: { key: FieldKey; label: string }[] = [
   { key: "amount", label: "Amount" },
   { key: "date", label: "Date" },
   { key: "category", label: "Category" },
@@ -52,13 +52,6 @@ function money(cents: number | null): string {
   if (cents === null) return "";
   return `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
-
-const FIELD_PATTERNS: Record<Field, RegExp> = {
-  amount: /amount|paid|debit|credit|total|invoice|value|revenue|expense|in\s*$/i,
-  date: /date|day|time/i,
-  category: /category|categor|type|merchant|project/i,
-  note: /note|memo|description|detail|reference|comment/i,
-};
 
 function guessMapping(headers: string[]): ColumnMapping {
   const first = (re: RegExp) => {
@@ -93,20 +86,32 @@ export function ImportView({ email }: { email: string }) {
     );
   }, [preview, columnCount, hasHeader]);
 
-  async function loadPreview(nextMapping: ColumnMapping): Promise<PreviewResponse> {
+  async function loadPreview(
+    nextMapping: ColumnMapping | null,
+    opts?: { skipRows?: number },
+  ): Promise<PreviewResponse> {
     const file = fileRef.current;
     if (!file) throw new Error("No file selected.");
     setBusy(true);
     setError(null);
     const form = new FormData();
     form.append("file", file);
-    form.append("skipRows", hasHeader ? "1" : "0");
-    form.append("mapping", JSON.stringify(nextMapping));
+    if (nextMapping === null) {
+      form.append("useAuto", "1");
+    } else {
+      form.append("skipRows", String(opts?.skipRows ?? (hasHeader ? 1 : 0)));
+      form.append("mapping", JSON.stringify(nextMapping));
+    }
     try {
       const res = await fetch("/api/import", { method: "POST", body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Preview failed.");
-      setMapping(nextMapping);
+      if (nextMapping !== null) {
+        setMapping(nextMapping);
+      } else if (data.auto) {
+        setHasHeader(data.auto.hasHeader);
+        setMapping(data.auto.mapping);
+      }
       setPreview(data);
       const selected = new Set<number>();
       for (const row of data.rows) {
@@ -127,9 +132,23 @@ export function ImportView({ email }: { email: string }) {
     fileRef.current = file;
     setDone(null);
     try {
-      const probe = await loadPreview({ amount: 0, date: 1, category: 2, note: -1 });
-      const guessed = guessMapping(probe.firstRow ?? []);
-      await loadPreview(guessed);
+      const preview = await loadPreview(null);
+      const auto = preview.auto;
+      if (auto && (auto.mapping.amount < 0 || auto.mapping.date < 0)) {
+        const fallback = guessMapping(preview.firstRow ?? []);
+        if (auto.mapping.amount < 0 || auto.mapping.date < 0) {
+          setHasHeader(auto.hasHeader);
+          await loadPreview(
+            {
+              amount: Math.max(0, fallback.amount),
+              date: Math.max(0, fallback.date),
+              category: fallback.category,
+              note: fallback.note,
+            },
+            { skipRows: auto.hasHeader ? 1 : 0 },
+          );
+        }
+      }
     } catch {
       // error already surfaced
     }
@@ -178,13 +197,13 @@ export function ImportView({ email }: { email: string }) {
     }
   }
 
-  function updateField(field: Field, value: number) {
+  function updateField(field: FieldKey, value: number) {
     loadPreview({ ...mapping, [field]: value === -1 ? -1 : value });
   }
 
   function toggleHeader(next: boolean) {
     setHasHeader(next);
-    loadPreview(mapping);
+    loadPreview(mapping, { skipRows: next ? 1 : 0 });
   }
 
   function resetFromState() {
@@ -226,7 +245,7 @@ export function ImportView({ email }: { email: string }) {
 
       <div className={`${recipe.surface} p-6`}>
         <h2 className={type.sectionTitle + " " + palette.text}>1 · Upload a file</h2>
-        <label className={`mt-3 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${palette.borderStrong} ${palette.inkSoft} px-6 py-10 text-center transition hover:border-gray-400`}>
+        <label className={`mt-3 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${palette.borderStrong} ${palette.inkSoft} px-6 py-10 text-center transition hover:border-gray-400 dark:hover:border-gray-600`}>
           <input
             ref={inputRef}
             type="file"

@@ -19,7 +19,7 @@ export default async function DashboardAppLayout({
   if (!user) redirect("/login");
 
   const cookieStore = cookies();
-  const sidebarOpen = cookieStore.get("sidebar_state")?.value === "true";
+  const sidebarOpen = cookieStore.get("sidebar_state")?.value !== "false";
 
   return (
     <SidebarProvider defaultOpen={sidebarOpen}>

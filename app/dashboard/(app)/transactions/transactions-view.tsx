@@ -59,6 +59,8 @@ function draftToInput(draft: Draft) {
   });
 }
 
+const UNCATEGORIZED = "__uncategorized__";
+
 function CategorySelect({
   value,
   categories,
@@ -71,12 +73,15 @@ function CategorySelect({
   ariaLabel: string;
 }) {
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select
+      value={value === "" ? UNCATEGORIZED : value}
+      onValueChange={(v) => onValueChange(v === UNCATEGORIZED ? "" : v)}
+    >
       <SelectTrigger aria-label={ariaLabel} className="w-full">
         <SelectValue placeholder="Uncategorized" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="">Uncategorized</SelectItem>
+        <SelectItem value={UNCATEGORIZED}>Uncategorized</SelectItem>
         {categories.map((c) => (
           <SelectItem key={c.id} value={c.id}>
             {c.type === "IN" ? "+" : "\u2212"} {c.name}

@@ -19,6 +19,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { palette, type } from "@/lib/tokens";
 
@@ -38,12 +39,14 @@ const NAV: NavItem[] = [
 
 export function DashboardSidebar() {
   const path = usePathname();
+  const { setOpenMobile } = useSidebar();
 
   return (
     <Sidebar>
       <SidebarHeader>
         <Link
           href="/dashboard"
+          onClick={() => setOpenMobile(false)}
           className="flex items-center gap-2 px-2 py-2"
         >
           <span
@@ -68,7 +71,7 @@ export function DashboardSidebar() {
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton asChild isActive={active}>
-                      <Link href={item.href}>
+                      <Link href={item.href} onClick={() => setOpenMobile(false)}>
                         <item.icon />
                         <span>{item.label}</span>
                       </Link>

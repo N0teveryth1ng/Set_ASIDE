@@ -6,6 +6,8 @@ import type { LucideIcon } from "lucide-react";
 import {
   ArrowLeftRight,
   LayoutDashboard,
+  PanelLeftClose,
+  PanelLeftOpen,
   Settings,
   Upload,
 } from "lucide-react";
@@ -37,25 +39,49 @@ const NAV: NavItem[] = [
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
+function DashboardSidebarToggle() {
+  const { state, toggleSidebar } = useSidebar();
+  const collapsed = state === "collapsed";
+
+  return (
+    <button
+      type="button"
+      onClick={toggleSidebar}
+      aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring dark:text-gray-400"
+    >
+      {collapsed ? (
+        <PanelLeftOpen className="h-4 w-4" />
+      ) : (
+        <PanelLeftClose className="h-4 w-4" />
+      )}
+    </button>
+  );
+}
+
 export function DashboardSidebar() {
   const path = usePathname();
   const { setOpenMobile } = useSidebar();
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Link
-          href="/dashboard"
-          onClick={() => setOpenMobile(false)}
-          className="flex items-center gap-2 px-2 py-2"
-        >
-          <span
-            className={`flex h-7 w-7 items-center justify-center rounded-md text-white ${palette.cta} font-display text-sm font-semibold`}
+        <div className="flex items-center justify-between gap-2 px-2 py-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+          <Link
+            href="/dashboard"
+            onClick={() => setOpenMobile(false)}
+            className="flex min-w-0 items-center gap-2 group-data-[collapsible=icon]:sr-only"
           >
-            S
-          </span>
-          <span className={`${type.brand} ${palette.text}`}>Set-Aside</span>
-        </Link>
+            <span
+              className={`flex h-7 w-7 items-center justify-center rounded-md text-white ${palette.cta} font-display text-sm font-semibold`}
+            >
+              S
+            </span>
+            <span className={`${type.brand} ${palette.text}`}>Set-Aside</span>
+          </Link>
+          <DashboardSidebarToggle />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

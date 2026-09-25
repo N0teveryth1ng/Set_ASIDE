@@ -3,6 +3,14 @@
 import { useMemo, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import type { ColumnMapping, ImportRow } from "@/lib/import/validate";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { palette, recipe, space, type } from "@/lib/tokens";
 
 type Status = ImportRow["status"];
@@ -201,12 +209,12 @@ export function ImportView({ email }: { email: string }) {
           entries. Blocked rows were left untouched.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <button onClick={resetFromState} className={recipe.btnGhostLg}>
+          <Button variant="outline" onClick={resetFromState}>
             Import another file
-          </button>
-          <a href="/dashboard/transactions" className={recipe.btnPrimaryLg}>
-            View transactions
-          </a>
+          </Button>
+          <Button asChild>
+            <a href="/dashboard/transactions">View transactions</a>
+          </Button>
         </div>
       </div>
     );
@@ -243,21 +251,25 @@ export function ImportView({ email }: { email: string }) {
             <h2 className={type.sectionTitle + " " + palette.text}>2 · Map columns</h2>
             <div className="mt-4 flex flex-wrap items-end gap-4">
               {FIELDS.map((field) => (
-                <label key={field.key} className="block">
+                <div key={field.key}>
                   <span className={recipe.labelThin}>{field.label}</span>
-                  <select
-                    value={mapping[field.key] ?? -1}
-                    onChange={(e) => updateField(field.key, Number(e.target.value))}
-                    className={recipe.inputControl}
+                  <Select
+                    value={String(mapping[field.key] ?? -1)}
+                    onValueChange={(value) => updateField(field.key, Number(value))}
                   >
-                    <option value={-1}>— none —</option>
-                    {labels.map((label, i) => (
-                      <option key={i} value={i}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                    <SelectTrigger aria-label={field.label} className="mt-1 w-44">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="-1">— none —</SelectItem>
+                      {labels.map((label, i) => (
+                        <SelectItem key={i} value={String(i)}>
+                          {label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               ))}
               <label className={`flex items-center gap-2 pb-2.5 ${type.text} ${palette.textSubtle}`}>
                 <input
@@ -341,13 +353,12 @@ export function ImportView({ email }: { email: string }) {
               <p className={`text-xs ${palette.textGhost}`}>
                 Blocked rows can’t be imported — they’re never silently altered.
               </p>
-              <button
+              <Button
                 onClick={confirmImport}
                 disabled={busy}
-                className={recipe.btnPrimaryLg}
               >
                 {busy ? "Importing…" : "Import selected rows"}
-              </button>
+              </Button>
             </div>
           </div>
         </>

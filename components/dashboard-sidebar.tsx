@@ -70,7 +70,15 @@ export function DashboardSidebar() {
                   : path.startsWith(item.href);
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={active}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      className={
+                        active
+                          ? "data-[active=true]:!bg-sidebar-primary data-[active=true]:!text-sidebar-primary-foreground hover:!bg-sidebar-primary hover:!text-sidebar-primary-foreground"
+                          : undefined
+                      }
+                    >
                       <Link href={item.href} onClick={() => setOpenMobile(false)}>
                         <item.icon />
                         <span>{item.label}</span>

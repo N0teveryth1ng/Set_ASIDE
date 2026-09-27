@@ -15,6 +15,15 @@ function decodeAccessPayload(accessToken: string): Record<string, unknown> | nul
   }
 }
 
+function emailFromPayload(payload: Record<string, unknown>): string | null {
+  const metadata = payload.user_metadata as Record<string, unknown> | undefined;
+  return typeof payload.email === "string"
+    ? payload.email
+    : typeof metadata?.email === "string"
+      ? metadata.email
+      : null;
+}
+
 export async function getSessionUserFromCookie(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
   const tokenCookie = cookieStore
@@ -22,21 +31,37 @@ export async function getSessionUserFromCookie(): Promise<SessionUser | null> {
     .find((c) => c.name.startsWith("sb-") && c.name.includes("-auth-token"));
   if (!tokenCookie?.value) return null;
 
-  const parts = tokenCookie.value.split(".");
-  const accessToken =
-    parts.length >= 6 ? parts.slice(0, 3).join(".") : parts.length === 3 ? tokenCookie.value : null;
-  if (!accessToken) return null;
+  // @supabase/ssr 0.12.x stores the session as `base64-` + base64url JSON
+  // (D-018). Fall back to the plain `accessToken.refreshToken` shape.
+  if (tokenCookie.value.startsWith("base64-")) {
+    try {
+      const json = Buffer.from(tokenCookie.value.slice("base64-".length), "base64url").toString("utf8");
+      const session = JSON.parse(json) as {
+        user?: { id?: unknown; email?: unknown };
+        access_token?: unknown;
+      };
+      if (typeof session.user?.id === "string") {
+        return { id: session.user.id, email: typeof session.user.email === "string" ? session.user.email : null };
+      }
+      if (typeof session.access_token === "string") {
+        const payload = decodeAccessPayload(session.access_token);
+        if (payload && typeof payload.sub === "string") {
+          return { id: payload.sub, email: emailFromPayload(payload) };
+        }
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
 
-  const payload = decodeAccessPayload(accessToken);
-  if (!payload || typeof payload.sub !== "string") return null;
+  if (tokenCookie.value.split(".").length >= 3) {
+    const accessToken = tokenCookie.value.split(".").slice(0, 3).join(".");
+    const payload = decodeAccessPayload(accessToken);
+    if (payload && typeof payload.sub === "string") {
+      return { id: payload.sub, email: emailFromPayload(payload) };
+    }
+  }
 
-  const metadata = payload.user_metadata as Record<string, unknown> | undefined;
-  const email =
-    typeof payload.email === "string"
-      ? payload.email
-      : typeof metadata?.email === "string"
-        ? metadata.email
-        : null;
-
-  return { id: payload.sub, email };
+  return null;
 }

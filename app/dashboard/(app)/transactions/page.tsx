@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUserFromCookie } from "@/lib/supabase/session";
 import { embedToCategory } from "@/lib/ledger/mapping";
 import { TransactionsView } from "./transactions-view";
 import type { EntryRow, CategoryOption } from "./types";
@@ -16,9 +17,7 @@ interface RawEntryRow {
 
 export default async function TransactionsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUserFromCookie();
   if (!user) redirect("/login");
 
   const [{ data: entries }, { data: categories }, { data: settings }] = await Promise.all([

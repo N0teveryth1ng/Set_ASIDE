@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUserFromCookie } from "@/lib/supabase/session";
 import { toLedgerEntry } from "@/lib/ledger/mapping";
 import { withoutHiddenCategories } from "@/lib/ledger/filter";
 import { buildSummary } from "@/lib/summary";
@@ -13,9 +14,7 @@ import { palette, recipe, space, type } from "@/lib/tokens";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUserFromCookie();
 
   if (!user) redirect("/login");
 

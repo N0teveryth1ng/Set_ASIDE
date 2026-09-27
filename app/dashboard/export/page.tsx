@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUserFromCookie } from "@/lib/supabase/session";
 import { embedToCategory } from "@/lib/ledger/mapping";
 import { computeTotals } from "@/lib/ledger/ledger";
 import { isDateISO } from "@/lib/export";
@@ -21,9 +22,7 @@ export default async function ExportReportPage({
   searchParams: { from?: string; to?: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUserFromCookie();
   if (!user) redirect("/login");
 
   const from = searchParams.from;

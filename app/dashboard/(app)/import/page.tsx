@@ -1,13 +1,12 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUserFromCookie } from "@/lib/supabase/session";
 import { ImportView } from "./import-view";
 import { palette, space, type } from "@/lib/tokens";
 
 export default async function ImportPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUserFromCookie();
   if (!user) redirect("/login");
 
   return (

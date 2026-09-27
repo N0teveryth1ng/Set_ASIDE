@@ -1,11 +1,12 @@
 "use client";
 
-import { useId, useMemo, useState, type ReactElement, type ReactNode } from "react";
+import { useMemo, useState, type ReactElement, type ReactNode } from "react";
+import { Area, AreaChart, ReferenceDot, XAxis, YAxis } from "recharts";
 import { PiggyBank, TrendingDown, TrendingUp } from "lucide-react";
 import type { Period, CategoryTotal, TrendPoint, Totals } from "@/lib/ledger/types";
 import type { Summary } from "@/lib/summary";
 import { DEFAULT_CARDS, type CardToken } from "@/lib/settings";
-import { monotonePath } from "@/lib/sparkline";
+import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import { palette, recipe, space, type } from "@/lib/tokens";
 
 const PERIOD_LABELS: Record<Period, string> = {
@@ -37,10 +38,62 @@ function monthLabel(key: string): string {
   return `${name} ’${String(year).slice(2)}`;
 }
 
-// Steffen’s piecewise monotone cubic interpolation — the SVG equivalent of
-// D3’s curveMonotoneX. Preserves monotonic segments between points (no
-// overshoot) while producing smooth, continuous first-derivative bezier
-// curves instead of angular polyline segments.
+// A real, data-bound chart: Recharts <Area type="monotone"> renders the same
+// trailing 12-month net series that drives the dashboard, so the curve always
+// follows the actual ledger — no hardcoded decorative shape.
+
+function NetPositionChart({ trend }: { trend: TrendPoint[] }) {
+  const data = trend.map((p) => ({
+    label: monthLabel(p.month),
+    netCents: p.netCents,
+  }));
+  const values = data.map((d) => d.netCents);
+  const lo = Math.min(...values);
+  const hi = Math.max(...values);
+  const domain: [number, number] = lo === hi ? [lo - 1, hi + 1] : [lo, hi];
+  const last = data[data.length - 1];
+  const chartConfig = { netCents: { label: "Net" } } satisfies ChartConfig;
+
+  return (
+    <ChartContainer
+      config={chartConfig}
+      aria-label="Net position trend"
+      className={`h-20 w-64 shrink-0 ${palette.gainStroke} [&_.recharts-area-curve]:[stroke-linecap:butt]`}
+    >
+      <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
+        <defs>
+          <linearGradient id="netPositionFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="currentColor" stopOpacity={0.28} />
+            <stop offset="95%" stopColor="currentColor" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <XAxis dataKey="label" hide />
+        <YAxis hide domain={domain} />
+        <Area
+          dataKey="netCents"
+          type="monotone"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="butt"
+          fill="url(#netPositionFill)"
+          dot={false}
+          activeDot={false}
+          isAnimationActive={false}
+        />
+        {last && (
+          <ReferenceDot
+            x={last.label}
+            y={last.netCents}
+            r={3}
+            fill="currentColor"
+            stroke="rgba(255,255,255,0.9)"
+            strokeWidth={1}
+          />
+        )}
+      </AreaChart>
+    </ChartContainer>
+  );
+}
 
 function CountCard({
   label,
@@ -77,21 +130,6 @@ function HeroCard({
   pending: boolean;
   onSelect: (period: Period) => void;
 }) {
-  const nets = summary.trend.map((p) => p.netCents);
-  const maxAbs = Math.max(1, ...nets.map((n) => Math.abs(n)));
-  const coords = nets.map((net, i) => {
-    const x = (i / Math.max(1, nets.length - 1)) * 100;
-    const y = 16 - (net / maxAbs) * 14;
-    return { x, y };
-  });
-  const smoothPath = monotonePath(coords);
-  const areaPath =
-    coords.length > 1
-      ? `${smoothPath} L${coords[coords.length - 1].x.toFixed(1)},32 L${coords[0].x.toFixed(1)},32 Z`
-      : "";
-  const current = coords[coords.length - 1];
-  const gradId = useId().replace(/[:]/g, "");
-
   const signedNet = signed(summary.totals.netCents, summary.currency);
 
   return (
@@ -110,52 +148,7 @@ function HeroCard({
             {PERIOD_LABELS[summary.period]}
           </p>
         </div>
-        <svg
-          className={`h-20 w-64 ${palette.gainStroke}`}
-          viewBox="0 0 100 32"
-          preserveAspectRatio="none"
-          aria-label="Net position trend"
-        >
-          <defs>
-            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="currentColor" stopOpacity="0.28" />
-              <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <line
-            x1="0"
-            y1="16"
-            x2="100"
-            y2="16"
-            stroke="currentColor"
-            strokeWidth="0.5"
-            strokeOpacity="0.2"
-            strokeDasharray="2 2"
-          />
-          {areaPath && (
-            <path d={areaPath} fill={`url(#${gradId})`} stroke="none" />
-          )}
-          {smoothPath && (
-            <path
-              d={smoothPath}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="butt"
-              strokeLinejoin="round"
-            />
-          )}
-          {coords.length > 0 && (
-            <circle
-              cx={current.x}
-              cy={current.y}
-              r="2.4"
-              fill="currentColor"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="1"
-            />
-          )}
-        </svg>
+        <NetPositionChart trend={summary.trend} />
       </div>
       <div className="mt-7 flex flex-wrap gap-2">
         {PERIOD_ORDER.map((period) => {

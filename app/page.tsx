@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { PiggyBank, ShieldCheck, Wallet } from "lucide-react";
 import LandingNav from "@/components/landing-nav";
-import { BrandMark } from "@/components/brand-mark";
 import { palette, recipe, space, type } from "@/lib/tokens";
 
 const FEATURES = [
@@ -147,10 +146,7 @@ export default function Home() {
           <SectionTitle>One screen, always up to date</SectionTitle>
           <div className={`mt-8 ${recipe.surface} p-6 sm:p-8`}>
             <div className="flex items-center justify-between">
-              <span className={`flex items-center gap-2 ${type.brand} ${palette.text}`}>
-                <BrandMark className="h-4 w-4" />
-                Set-Aside
-              </span>
+              <span className={`${type.brand} ${palette.text}`}>Set-Aside</span>
               <span className={`${type.tiny} ${palette.textGhost}`}>
                 September 2026 · Illustrative
               </span>
@@ -243,10 +239,7 @@ export default function Home() {
         <footer className={`border-t py-10`}>
           <div className="grid gap-8 sm:grid-cols-3">
             <div>
-              <p className={`flex items-center gap-2 ${type.brand} ${palette.text}`}>
-                <BrandMark className="h-4 w-4" />
-                Set-Aside
-              </p>
+              <p className={`${type.brand} ${palette.text}`}>Set-Aside</p>
               <p className={`mt-2 max-w-xs text-sm leading-relaxed ${palette.textSubtle}`}>
                 A calm money dashboard for the self-employed.
               </p>

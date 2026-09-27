@@ -23,7 +23,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { BrandMark } from "@/components/brand-mark";
 import { palette, type } from "@/lib/tokens";
 
 interface NavItem {
@@ -89,9 +88,9 @@ export function DashboardSidebar() {
             className="flex min-w-0 items-center gap-2 group-data-[collapsible=icon]:hidden"
           >
             <span
-              className={`flex h-7 w-7 items-center justify-center rounded-md text-white ${palette.cta}`}
+              className={`flex h-7 w-7 items-center justify-center rounded-md text-white ${palette.cta} font-display text-sm font-semibold`}
             >
-              <BrandMark className="h-4 w-4" />
+              S
             </span>
             <span className={`${type.brand} ${palette.text}`}>Set-Aside</span>
           </Link>

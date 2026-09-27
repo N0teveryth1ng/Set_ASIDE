@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { BrandMark } from "@/components/brand-mark";
 import { palette, recipe, type } from "@/lib/tokens";
 
 const SECTIONS = [
@@ -20,8 +19,7 @@ export default function LandingNav() {
   return (
     <header className="sticky top-0 z-50 border-b bg-gray-50/90 backdrop-blur dark:bg-gray-950/90">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <Link href="/" className={`flex items-center gap-2 ${type.brand} ${palette.text}`}>
-          <BrandMark className="h-4 w-4" />
+        <Link href="/" className={`${type.brand} ${palette.text}`}>
           Set-Aside
         </Link>
 

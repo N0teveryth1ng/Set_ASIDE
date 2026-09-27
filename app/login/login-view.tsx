@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BrandMark } from "@/components/brand-mark";
 import { createClient } from "@/lib/supabase/client";
 import { palette, recipe, space, type } from "@/lib/tokens";
 
@@ -94,7 +93,7 @@ export default function LoginView() {
             className={`flex h-10 w-10 items-center justify-center rounded-lg ${palette.cta} ${palette.textInverse}`}
             aria-hidden
           >
-            <BrandMark className="h-5 w-5" />
+            <span className="font-display text-lg font-semibold">S</span>
           </span>
           <div>
             <h1 className={`${type.brand} ${palette.text}`}>Set-Aside</h1>

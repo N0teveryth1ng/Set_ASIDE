@@ -69,7 +69,7 @@ export function NavAuthCta() {
   return (
     <div
       data-nav-cta=""
-      className={`flex min-h-[2.3125rem] min-w-[13.5rem] items-center justify-end gap-2 ${pending(status)}`}
+      className={`flex min-h-[2.375rem] min-w-[13.5rem] items-center justify-end gap-2 ${pending(status)}`}
     >
       {status === "signed-in" ? (
         <Link href="/dashboard" className={`${recipe.btnPrimary} px-4 py-2`}>

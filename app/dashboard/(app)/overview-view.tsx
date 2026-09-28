@@ -58,7 +58,7 @@ function NetPositionChart({ trend }: { trend: TrendPoint[] }) {
     <ChartContainer
       config={chartConfig}
       aria-label="Net position trend"
-      className={`h-20 w-64 shrink-0 ${palette.gainStroke} [&_.recharts-area-curve]:[stroke-linecap:butt]`}
+      className={`h-20 w-full ${palette.gainStroke} [&_.recharts-area-curve]:[stroke-linecap:butt]`}
     >
       <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
         <defs>
@@ -148,6 +148,8 @@ function HeroCard({
             {PERIOD_LABELS[summary.period]}
           </p>
         </div>
+      </div>
+      <div className="mt-6">
         <NetPositionChart trend={summary.trend} />
       </div>
       <div className="mt-7 flex flex-wrap gap-2">

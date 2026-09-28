@@ -1,12 +1,13 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getSessionUserFromCookie } from "@/lib/supabase/session";
 import { PresetPicker } from "./preset-picker";
 import { palette, space, type } from "@/lib/tokens";
 
 export default async function OnboardingPage() {
   const supabase = await createClient();
-  const user = await getSessionUserFromCookie();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 

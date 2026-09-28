@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getSessionUserFromCookie } from "@/lib/supabase/session";
 import { DEFAULT_CARDS, normalizeCards } from "@/lib/settings";
 import { SettingsView } from "./settings-view";
 import { palette, space } from "@/lib/tokens";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
-  const user = await getSessionUserFromCookie();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const [{ data: settings }, { data: categories }] = await Promise.all([

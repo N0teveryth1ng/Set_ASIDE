@@ -57,6 +57,7 @@ function NetPositionChart({ trend }: { trend: TrendPoint[] }) {
   return (
     <ChartContainer
       config={chartConfig}
+      role="img"
       aria-label="Net position trend"
       className={`h-20 w-full ${palette.gainStroke} [&_.recharts-area-curve]:[stroke-linecap:butt]`}
     >

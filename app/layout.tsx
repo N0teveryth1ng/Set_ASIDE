@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     "Set-Aside is a money dashboard for the self-employed: categories, a tax set-aside, and a Net Position you can actually trust.",
 };
 
-const THEME_SCRIPT = `try{var t=localStorage.getItem("set-aside-theme");var d=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.documentElement.classList.add("dark")}catch(e){}`;
+const THEME_SCRIPT = `document.documentElement.dataset.js="on";try{var t=localStorage.getItem("set-aside-theme");var d=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.documentElement.classList.add("dark")}catch(e){}`;
 
 export default function RootLayout({
   children,

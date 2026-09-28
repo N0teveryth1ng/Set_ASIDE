@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PiggyBank, ShieldCheck, Wallet } from "lucide-react";
 import LandingNav from "@/components/landing-nav";
-import { AuthCtaProvider, SignupCta } from "@/components/auth-cta";
+import { AuthCtaProvider, FooterAuthCtas, SignupCta } from "@/components/auth-cta";
 import { BrandMark } from "@/components/brand-mark";
 import { palette, recipe, space, type } from "@/lib/tokens";
 
@@ -99,7 +99,7 @@ export default function Home() {
             set-aside for you, and keeps a clean category breakdown.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <SignupCta variant="hero" className="px-6 py-3" />
+            <SignupCta className="px-6 py-3" />
             <a href="#how-it-works" className={`${recipe.btnGhostLg} px-6 py-3`}>
               How it works
             </a>
@@ -234,7 +234,7 @@ export default function Home() {
             <p className={`mx-auto mt-4 max-w-md text-sm ${palette.textMuted}`}>
               Free to try. A magic link is all it takes to see your Net Position.
             </p>
-            <SignupCta variant="panel" className="mt-8 inline-block px-6 py-3" />
+            <SignupCta className="mt-8 inline-block px-6 py-3" />
           </div>
         </section>
 
@@ -267,11 +267,7 @@ export default function Home() {
             </div>
             <div>
               <p className={`${type.caps} ${palette.textGhost}`}>Account</p>
-              <ul className="mt-3 space-y-2 text-sm">
-                <li>
-                  <SignupCta variant="footer" />
-                </li>
-              </ul>
+              <FooterAuthCtas />
             </div>
           </div>
           <p className={`mt-10 text-xs ${palette.textGhost}`}>

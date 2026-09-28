@@ -22,7 +22,14 @@ export const metadata: Metadata = {
     "Set-Aside is a money dashboard for the self-employed: categories, a tax set-aside, and a Net Position you can actually trust.",
 };
 
-const THEME_SCRIPT = `document.documentElement.dataset.js="on";try{var t=localStorage.getItem("set-aside-theme");var d=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.documentElement.classList.add("dark")}catch(e){}`;
+const THEME_SCRIPT = `try{var t=localStorage.getItem("set-aside-theme");var d=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.documentElement.classList.add("dark")}catch(e){}`;
+
+// Anonymous visitors never have an auth cookie, so nothing is hidden from them
+// and the CTA slot stays visible at first paint. Only when a session cookie
+// exists do we hide it and keep it hidden unless we have nothing better: if the
+// app bundle never arrives or React never takes over, this reveals the
+// signed-out buttons after 1500ms regardless of what else happened.
+const AUTH_SCRIPT = `try{var m=document.cookie.match(/(?:^|;\\s*)sb-[^=]*-auth-token[^=]*=/);if(m){var d=document.documentElement;d.dataset.authPending="1";setTimeout(function(){if(d.dataset.authPending)delete d.dataset.authPending},1500)}}catch(e){}`;
 
 export default function RootLayout({
   children,
@@ -37,6 +44,7 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: AUTH_SCRIPT }} />
       </head>
       <body className="font-sans text-gray-900 antialiased dark:text-gray-100">
         <ThemeProvider>

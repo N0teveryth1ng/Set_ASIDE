@@ -99,7 +99,7 @@
   body {
     @apply bg-background text-foreground;
   }
-  html:not([data-js]) [data-session-cta] {
-    display: none;
+  html[data-auth-pending] [data-session-cta] {
+    visibility: hidden;
   }
 }

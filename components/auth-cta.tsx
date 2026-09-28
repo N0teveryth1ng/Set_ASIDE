@@ -67,7 +67,10 @@ export function NavAuthCta() {
   const status = useAuthCta();
 
   return (
-    <div className={`flex min-w-[13.5rem] items-center justify-end gap-2 ${pending(status)}`}>
+    <div
+      data-nav-cta=""
+      className={`flex min-w-[13.5rem] items-center justify-end gap-2 ${pending(status)}`}
+    >
       {status === "signed-in" ? (
         <Link href="/dashboard" className={`${recipe.btnPrimary} px-4 py-2`}>
           Go to dashboard

@@ -21,7 +21,9 @@
   </svg>
 </p>
 
-<h1 align="center">Set-Aside</h1>
+<h1 align="center">
+  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.7" stroke-linecap="round" style="vertical-align:middle"><rect x="4.5" y="8" width="15" height="11.5" rx="2.6"/><path d="M4.5 12.4h15"/><circle cx="12" cy="12.3" r="2.4" fill="#4F46E5" stroke="none"/></svg>&nbsp;&nbsp;Set-Aside
+</h1>
 
 <p align="center"><b>A calm money dashboard for the self-employed.</b><br/>
 Record money in and money out. Set-Aside shows your Net Position, separates your tax <i>for you</i>, and keeps a clean category breakdown — trendline, not a grid.</p>

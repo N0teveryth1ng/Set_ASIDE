@@ -37,8 +37,8 @@ Record money in and money out. Set-Aside shows your Net Position, separates your
 <p align="center"><sub>Full walkthrough: signup via magic link → picking a preset → the dashboard → recording an entry → settings.</sub></p>
 
 <p align="center">
-  <video width="100%" autoplay loop muted playsinline poster="docs/media/poster-hero.png">
-    <source src="https://media.githubusercontent.com/media/N0teveryth1ng/Set_ASIDE/HEAD/docs/media/set-aside-launch.mp4" type="video/mp4" />
+  <video width="100%" autoplay loop muted playsinline>
+    <source src="https://github.com/N0teveryth1ng/Set_ASIDE/releases/download/video-v1/set-aside-launch.mp4" type="video/mp4" />
   </video>
 </p>
 

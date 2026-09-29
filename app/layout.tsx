@@ -45,6 +45,11 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: AUTH_SCRIPT }} />
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="a0473930-082e-4755-8f84-3315122027e7"
+        />
       </head>
       <body className="font-sans text-gray-900 antialiased dark:text-gray-100">
         <ThemeProvider>

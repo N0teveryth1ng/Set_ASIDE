@@ -32,9 +32,22 @@ Record money in and money out. Set-Aside shows your Net Position, separates your
 
 ---
 
-## The product, in 55 seconds
+## The workflow
 
-<p align="center"><sub>Full walkthrough: signup via magic link → picking a preset → the dashboard → recording an entry → settings.</sub></p>
+Sign up with a magic link, pick a preset, record money in and out — the ledger does the rest.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/N0teveryth1ng/Set_ASIDE/main/docs/media/workflow.svg" alt="Set-Aside workflow: landing → magic-link sign-in → preset → record in & out → Net Position with tax set aside, running on Next.js/Supabase/Prisma with RLS" width="100%" />
+</p>
+
+- **One number.** Money in, money out, summed into a Net Position you can trust — a trendline, not a grid.
+- **Presets seed your categories.** Freelance, Business, Personal, or Creator, chosen once at sign-up.
+- **The tax is set aside for you.** A share of every positive period is separated at your rate (23% is the common default).
+- **Private by construction.** Supabase Row Level Security guards every owned table; there are no shared documents.
+
+<details><summary>Full walkthrough</summary>
+
+<p align="center"><sub>Signup via magic link → picking a preset → the dashboard → recording an entry → settings.</sub></p>
 
 <p align="center">
   <video width="100%" autoplay loop muted playsinline>
@@ -43,6 +56,8 @@ Record money in and money out. Set-Aside shows your Net Position, separates your
 </p>
 
 <p align="center">▸ Video lives at <code>docs/media/set-aside-launch.mp4</code> (55s, 1080p) · cinematic cut at <code>docs/media/set-aside-premiere.mp4</code> (40s, 1080p60)</p>
+
+</details>
 
 ## Why Set-Aside
 

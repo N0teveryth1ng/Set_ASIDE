@@ -51,7 +51,17 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     url.search = "";
-    return NextResponse.redirect(url);
+    const redirect = NextResponse.redirect(url);
+
+    // getUser() may have refreshed an about-to-expire session, writing the new
+    // session cookie through setAll onto the tracked response. A fresh redirect
+    // drops those writes, so the browser keeps the stale cookie and the next
+    // navigation bounces again. Carry every cookie off the tracked response,
+    // with its attributes, so the refreshed session reaches the browser.
+    for (const cookie of response().cookies.getAll()) {
+      redirect.cookies.set(cookie.name, cookie.value, cookie);
+    }
+    return redirect;
   }
 
   if (!user) {

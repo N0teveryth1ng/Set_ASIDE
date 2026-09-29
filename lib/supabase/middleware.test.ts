@@ -46,9 +46,20 @@ async function authJson(endpoint: string, body: Record<string, unknown>): Promis
   return res;
 }
 
-async function createUser(email: string): Promise<void> {
+async function createUser(email: string): Promise<{ id: string }> {
   const r = await authJson("/auth/v1/admin/users", { email, email_confirm: true });
   if (r.status !== 200 && r.status !== 201) throw new Error(`admin create user ${r.status}: ${await r.text()}`);
+  return (await r.json()) as { id: string };
+}
+
+async function deleteUser(id: string): Promise<void> {
+  const res = await fetch(`${supabaseUrl}/auth/v1/admin/users/${id}`, {
+    method: "DELETE",
+    headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` },
+  });
+  if (res.status !== 200 && res.status !== 204) {
+    console.warn(`cleanup: could not delete test user ${id}: status ${res.status}`);
+  }
 }
 
 async function mintSession(email: string): Promise<Session> {
@@ -96,8 +107,9 @@ function parseSession(value: string): Session {
 
 test("signed-in /login redirect carries the refreshed session cookie", { skip }, async () => {
   const email = `mw-refresh-${Date.now()}@gmail.com`;
-  await createUser(email);
-  const session = await mintSession(email);
+  const { id: userId } = await createUser(email);
+  try {
+    const session = await mintSession(email);
 
   // About to expire (now + 60s, inside the 90s refresh margin) but still valid:
   // getUser() on the request refreshes via the refresh token, writing new cookies.
@@ -153,4 +165,7 @@ test("signed-in /login redirect carries the refreshed session cookie", { skip },
 
   assert.equal(nextRes.status, 200, `/dashboard with the carried cookies must forward (NextResponse.next), got ${nextRes.status}`);
   assert.equal(nextRes.headers.get("location"), null, "no redirect to /login (no bounce)");
+  } finally {
+    await deleteUser(userId);
+  }
 });

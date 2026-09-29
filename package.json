@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --test \"lib/**/*.test.ts\"",
+    "test": "node --import ./test/register-next-server.mjs --test \"lib/**/*.test.ts\"",
     "postinstall": "prisma generate",
     "db:seed": "node prisma/seed.ts"
   },

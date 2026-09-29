@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PiggyBank, ShieldCheck, Wallet } from "lucide-react";
 import LandingNav from "@/components/landing-nav";
+import { AuthCtaProvider, FooterAuthCtas, SignupCta } from "@/components/auth-cta";
 import { BrandMark } from "@/components/brand-mark";
 import { palette, recipe, space, type } from "@/lib/tokens";
 
@@ -81,7 +82,8 @@ function SectionTitle({ children }: { children: string }) {
 export default function Home() {
   return (
     <main className={`${recipe.page} ${palette.canvas}`}>
-      <LandingNav />
+      <AuthCtaProvider>
+        <LandingNav />
 
       <div className={`${space.containerLg} pb-16`}>
         <section className="max-w-3xl pb-16 pt-14 sm:pt-20">
@@ -97,9 +99,7 @@ export default function Home() {
             set-aside for you, and keeps a clean category breakdown.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <Link href="/login" className={`${recipe.btnPrimaryLg} px-6 py-3`}>
-              Get started
-            </Link>
+            <SignupCta className="px-6 py-3" />
             <a href="#how-it-works" className={`${recipe.btnGhostLg} px-6 py-3`}>
               How it works
             </a>
@@ -234,9 +234,7 @@ export default function Home() {
             <p className={`mx-auto mt-4 max-w-md text-sm ${palette.textMuted}`}>
               Free to try. A magic link is all it takes to see your Net Position.
             </p>
-            <Link href="/login" className={`${recipe.btnPrimaryLg} mt-8 inline-block px-6 py-3`}>
-              Get started
-            </Link>
+            <SignupCta className="mt-8 inline-block px-6 py-3" />
           </div>
         </section>
 
@@ -269,18 +267,7 @@ export default function Home() {
             </div>
             <div>
               <p className={`${type.caps} ${palette.textGhost}`}>Account</p>
-              <ul className="mt-3 space-y-2 text-sm">
-                <li>
-                  <Link href="/login" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
-                    Log in
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/login" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
-                    Get started
-                  </Link>
-                </li>
-              </ul>
+              <FooterAuthCtas />
             </div>
           </div>
           <p className={`mt-10 text-xs ${palette.textGhost}`}>
@@ -288,6 +275,7 @@ export default function Home() {
           </p>
         </footer>
       </div>
+      </AuthCtaProvider>
     </main>
   );
 }

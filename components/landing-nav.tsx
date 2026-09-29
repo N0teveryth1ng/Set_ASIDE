@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
-import { palette, recipe, type } from "@/lib/tokens";
+import { NavAuthCta, NavAuthCtaMobile } from "@/components/auth-cta";
+import { recipe, palette, type } from "@/lib/tokens";
 
 const SECTIONS = [
   { href: "#features", label: "Features" },
@@ -33,13 +34,8 @@ export default function LandingNav() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <Link href="/login" className={`${recipe.btnGhost} px-4 py-2`}>
-            Log in
-          </Link>
-          <Link href="/login" className={`${recipe.btnPrimary} px-4 py-2`}>
-            Get started
-          </Link>
+        <div className="hidden items-center md:flex">
+          <NavAuthCta />
         </div>
 
         <button
@@ -67,14 +63,7 @@ export default function LandingNav() {
               </a>
             ))}
           </nav>
-          <div className="mt-4 flex flex-col gap-2">
-            <Link href="/login" onClick={close} className={`${recipe.btnGhost} px-4 py-2 text-center`}>
-              Log in
-            </Link>
-            <Link href="/login" onClick={close} className={`${recipe.btnPrimary} px-4 py-2 text-center`}>
-              Get started
-            </Link>
-          </div>
+          <NavAuthCtaMobile onNavigate={close} />
         </div>
       )}
     </header>

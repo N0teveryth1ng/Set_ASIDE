@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Database, FileUp, Percent, PiggyBank, ShieldCheck, Wallet } from "lucide-react";
 import LandingNav from "@/components/landing-nav";
 import { AuthCtaProvider, FooterAuthCtas, SignupCta } from "@/components/auth-cta";
@@ -98,15 +97,29 @@ const CATEGORIES = [
 ];
 
 function Eyebrow({ children }: { children: string }) {
-  return <p className={`${type.caps} ${palette.ctaText}`}>{children}</p>;
+  return <span className={recipe.eyebrow}>{children}</span>;
 }
 
-function SectionTitle({ children }: { children: string }) {
-  return <h2 className={`mt-4 ${type.section2} ${palette.text}`}>{children}</h2>;
-}
-
-function SectionCopy({ children }: { children: string }) {
-  return <p className={`mt-4 max-w-2xl ${type.text} leading-relaxed ${palette.textSubtle}`}>{children}</p>;
+function SectionHeading({
+  eyebrow,
+  title,
+  copy,
+}: {
+  eyebrow: string;
+  title: string;
+  copy?: string;
+}) {
+  return (
+    <div className="mx-auto max-w-2xl text-center">
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h2 className={`mt-5 ${type.section2} ${palette.text}`}>{title}</h2>
+      {copy && (
+        <p className={`mx-auto mt-4 max-w-xl ${type.text} leading-relaxed ${palette.textSubtle}`}>
+          {copy}
+        </p>
+      )}
+    </div>
+  );
 }
 
 function Trendline({ className = "" }: { className?: string }) {
@@ -130,32 +143,31 @@ export default function Home() {
       <AuthCtaProvider>
         <LandingNav />
 
-        <div className={`${space.containerLg} pb-16`}>
-          <section className="max-w-3xl pt-16 pb-12 sm:pt-24">
+        <section className={`border-b ${palette.border} ${palette.heroTint}`}>
+          <div className={`${space.containerLg} pb-16 pt-16 text-center sm:pb-20 sm:pt-20`}>
             <Eyebrow>A calm money dashboard for the self-employed</Eyebrow>
-            <h1 className={`mt-6 ${type.displayJumbo} ${palette.text}`}>
+            <h1 className={`mx-auto mt-6 max-w-3xl ${type.displayHero} ${palette.text}`}>
               Do you have money?
-              <br />
-              Is the tax set aside?
+              <br className="hidden sm:block" /> Is the tax set aside?
             </h1>
-            <p className={`mt-7 max-w-2xl text-lg leading-relaxed ${palette.textSubtle}`}>
+            <p className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed ${palette.textSubtle}`}>
               Set-Aside is a money dashboard for the self-employed. You record
               money in and money out; it shows your Net Position, separates a
               set-aside for you, and keeps a clean category breakdown —
               trendline, not a grid.
             </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <SignupCta className="px-6 py-3" />
-              <a href="#how-it-works" className={`${recipe.btnGhostLg} px-6 py-3`}>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+              <SignupCta variant="hero" />
+              <a href="#how-it-works" className={recipe.btnHeroGhost}>
                 How it works
               </a>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section aria-label="Example dashboard" className="pb-16 sm:pb-20">
-            <div
-              className={`${recipe.surface} overflow-hidden p-6 ring-1 ring-inset ring-black/5 dark:ring-white/5 sm:p-10`}
-            >
+        <section aria-label="Example dashboard" className="pb-16 sm:pb-24">
+          <div className={`${space.containerLg} pt-14 sm:pt-20`}>
+            <div className={recipe.mockPanel}>
               <div className="flex items-center justify-between">
                 <span className={`flex items-center gap-2 ${type.brand} ${palette.text}`}>
                   <BrandMark className="h-4 w-4" />
@@ -165,7 +177,7 @@ export default function Home() {
                   September 2026 · Illustrative
                 </span>
               </div>
-              <div className="mt-8 grid items-end gap-10 sm:grid-cols-[1fr_auto]">
+              <div className="mt-10 grid items-end gap-10 sm:grid-cols-[1.2fr_auto]">
                 <div>
                   <p className={`${type.caps} ${palette.textGhost}`}>Net Position</p>
                   <p className={`mt-2 ${type.heroNumber} ${palette.text}`}>{NET}</p>
@@ -190,50 +202,56 @@ export default function Home() {
             <p className={`mt-4 text-xs ${palette.textGhost}`}>
               Illustrative figures — your numbers live behind a login.
             </p>
-          </section>
+          </div>
+        </section>
 
-          <section id="trust" className="scroll-mt-24 pb-20 sm:pb-24">
-            <Eyebrow>Straight answers</Eyebrow>
-            <SectionTitle>How Set-Aside really works</SectionTitle>
-            <SectionCopy>
-              A few things, said plainly — so you know exactly what you're signing up for.
-            </SectionCopy>
-            <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border sm:grid-cols-3">
+        <section id="trust" className="scroll-mt-24 pb-20 sm:pb-24">
+          <div className={space.containerLg}>
+            <SectionHeading
+              eyebrow="Straight answers"
+              title="How Set-Aside really works"
+              copy="A few things, said plainly — so you know exactly what you're signing up for."
+            />
+            <div className="mt-12 grid gap-6 sm:grid-cols-3">
               {TRUST.map((item) => (
-                <div key={item.title} className={`p-7 ${palette.surface}`}>
-                  <item.icon size={18} strokeWidth={2} className={palette.ctaText} />
-                  <h3 className={`mt-5 ${type.sectionTitle} ${palette.text}`}>{item.title}</h3>
+                <div key={item.title} className={`${recipe.surfaceCard} p-7`}>
+                  <span className={recipe.iconTile}>
+                    <item.icon size={20} strokeWidth={2} />
+                  </span>
+                  <h3 className={`mt-6 ${type.sectionTitle} ${palette.text}`}>{item.title}</h3>
                   <p className={`mt-2 ${type.text} leading-relaxed ${palette.textSubtle}`}>
                     {item.body}
                   </p>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section id="features" className="scroll-mt-24 pb-20 sm:pb-24">
-            <Eyebrow>Why Set-Aside</Eyebrow>
-            <SectionTitle>Built around the three numbers you should care about</SectionTitle>
-            <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border sm:grid-cols-3">
+        <section id="features" className="scroll-mt-24 pb-20 sm:pb-24">
+          <div className={space.containerLg}>
+            <SectionHeading eyebrow="Why Set-Aside" title="Built around the three numbers you should care about" />
+            <div className="mt-12 grid gap-6 sm:grid-cols-3">
               {FEATURES.map((feature) => (
-                <div key={feature.title} className={`p-7 ${palette.surface}`}>
-                  <feature.icon size={18} strokeWidth={2} className={palette.textGhost} />
-                  <h3 className={`mt-5 ${type.sectionTitle} ${palette.text}`}>{feature.title}</h3>
+                <div key={feature.title} className={`${recipe.surfaceCard} p-7`}>
+                  <span className={recipe.iconTile}>
+                    <feature.icon size={20} strokeWidth={2} />
+                  </span>
+                  <h3 className={`mt-6 ${type.sectionTitle} ${palette.text}`}>{feature.title}</h3>
                   <p className={`mt-2 ${type.text} leading-relaxed ${palette.textSubtle}`}>
                     {feature.body}
                   </p>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section id="product" className="scroll-mt-24 pb-20 sm:pb-24">
-            <Eyebrow>The dashboard</Eyebrow>
-            <SectionTitle>One screen, always up to date</SectionTitle>
-            <div className="mt-10 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-              <div
-                className={`${recipe.surface} p-6 ring-1 ring-inset ring-black/5 dark:ring-white/5 sm:p-8`}
-              >
+        <section id="product" className="scroll-mt-24 pb-20 sm:pb-24">
+          <div className={space.containerLg}>
+            <SectionHeading eyebrow="The dashboard" title="One screen, always up to date" />
+            <div className="mt-12 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+              <div className={`${recipe.surfaceCard} p-6 sm:p-8`}>
                 <div className="flex items-center justify-between">
                   <span className={`flex items-center gap-2 ${type.brand} ${palette.text}`}>
                     <BrandMark className="h-4 w-4" />
@@ -241,7 +259,7 @@ export default function Home() {
                   </span>
                   <span className={`${type.tiny} ${palette.textGhost}`}>Overview · Illustrative</span>
                 </div>
-                <div className="mt-8">
+                <div className="mt-10">
                   <p className={`${type.caps} ${palette.textGhost}`}>Net Position</p>
                   <p className={`mt-2 ${type.heroNumber} ${palette.text}`}>{NET}</p>
                   <div className="mt-6 grid gap-6 sm:grid-cols-3">
@@ -266,12 +284,12 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className={`${recipe.surface} p-6 ring-1 ring-inset ring-black/5 dark:ring-white/5 sm:p-8`}>
+              <div className={`${recipe.surfaceCard} p-6 sm:p-8`}>
                 <div className="flex items-center justify-between">
                   <p className={`${type.sectionTitle} ${palette.text}`}>Category breakdown</p>
                   <span className={`${type.tiny} ${palette.textGhost}`}>Illustrative</span>
                 </div>
-                <ul className="mt-6 space-y-4">
+                <ul className="mt-6 space-y-5">
                   {CATEGORIES.map((cat) => (
                     <li key={cat.name}>
                       <div className="flex items-baseline justify-between">
@@ -293,30 +311,30 @@ export default function Home() {
                 </ul>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section id="how-it-works" className="scroll-mt-24 pb-20 sm:pb-24">
-            <Eyebrow>Getting started</Eyebrow>
-            <SectionTitle>Three steps from signup to your numbers</SectionTitle>
-            <div className="mt-10 grid gap-10 sm:grid-cols-3">
+        <section id="how-it-works" className="scroll-mt-24 pb-20 sm:pb-24">
+          <div className={space.containerLg}>
+            <SectionHeading eyebrow="Getting started" title="Three steps from signup to your numbers" />
+            <div className="mt-12 grid gap-10 sm:grid-cols-3">
               {STEPS.map((step, i) => (
-                <div key={step.title}>
-                  <span className={`font-display text-4xl font-semibold ${palette.textGhost}`}>
-                    0{i + 1}
-                  </span>
-                  <h3 className={`mt-4 ${type.heading} ${palette.text}`}>{step.title}</h3>
+                <div key={step.title} className="text-center">
+                  <span className={`mx-auto ${recipe.stepChip}`}>0{i + 1}</span>
+                  <h3 className={`mt-5 ${type.heading} ${palette.text}`}>{step.title}</h3>
                   <p className={`mt-2 ${type.text} leading-relaxed ${palette.textSubtle}`}>
                     {step.body}
                   </p>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section id="faq" className="scroll-mt-24 pb-20 sm:pb-24">
-            <Eyebrow>FAQ</Eyebrow>
-            <SectionTitle>Questions, answered</SectionTitle>
-            <div className="mt-10 space-y-3">
+        <section id="faq" className="scroll-mt-24 pb-20 sm:pb-24">
+          <div className={space.containerLg}>
+            <SectionHeading eyebrow="FAQ" title="Questions, answered" />
+            <div className="mt-12 space-y-3">
               {FAQ.map((item) => (
                 <details key={item.question} className={recipe.faqRow}>
                   <summary className={`cursor-pointer ${type.sectionTitle} ${palette.text}`}>
@@ -328,21 +346,27 @@ export default function Home() {
                 </details>
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section className="pb-20 sm:pb-24">
-            <div className={recipe.ctaPanel}>
-              <h2 className={`mx-auto max-w-lg font-display text-3xl font-semibold tracking-[-0.02em] ${palette.text}`}>
-                Your money life, finally in one number.
-              </h2>
-              <p className={`mx-auto mt-4 max-w-md text-sm ${palette.textMuted}`}>
-                Free to try. A magic link is all it takes to see your Net Position.
-              </p>
-              <SignupCta className="mt-8 inline-block px-6 py-3" />
+        <section className="pb-20 sm:pb-24">
+          <div className={`${space.containerLg}`}>
+            <div className={recipe.ctaPanelBig}>
+            <h2 className={`mx-auto max-w-lg font-display text-3xl font-semibold tracking-[-0.02em] ${palette.text}`}>
+              Your money life, finally in one number.
+            </h2>
+            <p className={`mx-auto mt-4 max-w-md text-sm ${palette.textMuted}`}>
+              Free to try. A magic link is all it takes to see your Net Position.
+            </p>
+            <div className="mt-8">
+              <SignupCta variant="hero" />
             </div>
-          </section>
+            </div>
+          </div>
+        </section>
 
-          <footer className={`border-t py-12`}>
+        <footer className={`border-t py-12`}>
+          <div className={space.containerLg}>
             <div className="grid gap-8 sm:grid-cols-3">
               <div>
                 <p className={`flex items-center gap-2 ${type.brand} ${palette.text}`}>
@@ -378,8 +402,8 @@ export default function Home() {
             <p className={`mt-10 text-xs ${palette.textGhost}`}>
               © 2026 Set-Aside. Illustrative figures on this page.
             </p>
-          </footer>
-        </div>
+          </div>
+        </footer>
       </AuthCtaProvider>
     </main>
   );

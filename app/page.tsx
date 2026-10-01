@@ -147,8 +147,9 @@ export default function Home() {
           <div className={`${space.containerLg} pb-16 pt-16 text-center sm:pb-20 sm:pt-20`}>
             <Eyebrow>A calm money dashboard for the self-employed</Eyebrow>
             <h1 className={`mx-auto mt-6 max-w-3xl ${type.displayHero} ${palette.text}`}>
-              Do you have money?
-              <br className="hidden sm:block" /> Is the tax set aside?
+              Do you have <span className={palette.ctaText}>money</span>?
+              <br className="hidden sm:block" /> Is the tax{" "}
+              <span className={palette.accentLime}>set aside</span>?
             </h1>
             <p className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed ${palette.textSubtle}`}>
               Set-Aside is a money dashboard for the self-employed. You record
@@ -353,7 +354,8 @@ export default function Home() {
           <div className={`${space.containerLg}`}>
             <div className={recipe.ctaPanelBig}>
             <h2 className={`mx-auto max-w-lg font-display text-3xl font-semibold tracking-[-0.02em] ${palette.text}`}>
-              Your money life, finally in one number.
+              Your money life, finally in{" "}
+              <span className={palette.ctaText}>one number</span>.
             </h2>
             <p className={`mx-auto mt-4 max-w-md text-sm ${palette.textMuted}`}>
               Free to try. A magic link is all it takes to see your Net Position.

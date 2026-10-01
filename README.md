@@ -37,7 +37,7 @@ Record money in and money out. Set-Aside shows your Net Position, separates your
 Sign up with a magic link, pick a preset, record money in and out — the ledger does the rest.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/N0teveryth1ng/Set_ASIDE/main/docs/media/workflow.svg" alt="Set-Aside workflow: landing → magic-link sign-in → preset → record in & out → Net Position with tax set aside, running on Next.js/Supabase/Prisma with RLS" width="100%" />
+  <img src="https://raw.githubusercontent.com/N0teveryth1ng/Set_ASIDE/main/docs/media/workflow.svg" alt="Set-Aside workflow: landing → magic-link sign-in → preset → record in & out → Net Position with tax set aside, running on Next.js/Supabase/Prisma with RLS, orchestrated by a main orchestrator that delegates to a coding sub-agent and a read-only marketing sub-agent" width="100%" />
 </p>
 
 - **One number.** Money in, money out, summed into a Net Position you can trust — a trendline, not a grid.
@@ -186,6 +186,19 @@ npm run dev        # http://localhost:3000
 ```
 
 `npm test` runs the pure `lib/ledger` suite plus live round-trips against Supabase — including middleware session handling through the signed-in redirect path — with a real session cookie carried and the throwaway test user cleaned up afterwards.
+
+### Agents
+
+This repo runs two sub-agents that the main orchestrator delegates to. They live in `.opencode/agents/` and are plain markdown — no runtime, no keys, no scheduled jobs.
+
+| Agent | Access | Job |
+|---|---|---|
+| `coding` | `edit: allow` · `bash: ask` | Builds features, fixes bugs, refactors. Follows `lib/tokens.ts` and ships every dark-mode pair. Proves the change with a build, the tests, and a real browser screenshot. |
+| `marketing` | `edit: deny` · `bash: deny` | Reads Reddit, X, Hacker News, Product Hunt and competitors live, returns the pulse, trend read, positioning, hooks and gaps. Every claim carries a date and a link. |
+
+The marketing agent is **read-only and research-only**. It can reach the repo's own files and the open web, and nothing else — it cannot write, run commands, post, comment, or DM anywhere. Anything it drafts waits on you. It also carries the product's real constraints, so it will not propose a claim the app can't back: Supabase-backed accounts, a flat set-aside rate you choose rather than a tax calculator, and one-time spreadsheet import.
+
+Invoke one directly with `@coding` or `@marketing`.
 
 ## Roadmap
 

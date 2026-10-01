@@ -64,6 +64,7 @@ export const palette = {
   ctaTextHover: "hover:text-[#4338CA] dark:hover:text-[#818CF8]",
   ctaBorder: "border-[#4F46E5]",
   ctaRing: "focus:ring-[#4F46E5]/30",
+  ctaBar: "bg-[#4F46E5]/80",
 } as const;
 
 export const radius = {
@@ -75,6 +76,7 @@ export const radius = {
 
 export const type = {
   displayHero: "font-display text-5xl font-semibold tracking-[-0.02em] sm:text-6xl",
+  displayJumbo: "font-display text-[2.6rem] font-semibold leading-tight tracking-[-0.03em] sm:text-7xl",
   heroNumber: "font-display text-5xl font-semibold tracking-[-0.02em] tabular-nums sm:text-6xl",
   brand: "font-display text-lg font-semibold tracking-tight",
   pageTitle: "font-display text-2xl font-semibold tracking-tight",

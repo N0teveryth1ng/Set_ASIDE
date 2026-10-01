@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Space_Grotesk } from "next/font/google";
 import AuthSignInWatcher from "@/components/auth-signin-watcher";
 import { ThemeProvider } from "@/lib/theme";
@@ -45,8 +46,12 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: AUTH_SCRIPT }} />
-        <script
-          defer
+        {/* Umami analytics: loaded once, in the root layout. Umami's tracker
+            patches the History API (pushState/replaceState/popstate) and sends
+            a pageview on every client-side route change, so in-app navigation
+            (landing → /login → /dashboard) is tracked without manual calls. */}
+        <Script
+          strategy="afterInteractive"
           src="https://cloud.umami.is/script.js"
           data-website-id="a0473930-082e-4755-8f84-3315122027e7"
         />

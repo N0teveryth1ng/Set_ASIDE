@@ -144,10 +144,16 @@ export function NavAuthCtaMobile({ onNavigate }: { onNavigate: () => void }) {
   );
 }
 
-export function SignupCta({ className = "" }: { className?: string }) {
+export function SignupCta({
+  className = "",
+  variant = "large",
+}: {
+  className?: string;
+  variant?: "large" | "hero";
+}) {
   const status = useAuthCta();
   const signedIn = status === "signed-in";
-  const style = `${recipe.btnPrimaryLg} ${className}`;
+  const style = `${variant === "hero" ? recipe.btnHero : recipe.btnPrimaryLg} ${className}`;
 
   return (
     <Link

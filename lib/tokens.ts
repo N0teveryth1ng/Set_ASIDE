@@ -65,6 +65,13 @@ export const palette = {
   ctaBorder: "border-[#4F46E5]",
   ctaRing: "focus:ring-[#4F46E5]/30",
   ctaBar: "bg-[#4F46E5]/80",
+
+  // Landing-specific (FlexFolio-inspired) surfaces — light-first, our palette.
+  heroTint: "bg-[#F6F7FB] dark:bg-gray-900/60",
+  tileIndigo: "bg-[#EEF2FF] text-[#4F46E5] dark:bg-[#EEF2FF]/10 dark:text-[#A5B4FC]",
+  ringInset: "ring-1 ring-inset ring-gray-900/5 dark:ring-white/10",
+  shadowPanel:
+    "shadow-[0_1px_2px_rgba(16,24,40,0.06),0_24px_48px_-16px_rgba(79,70,229,0.18)] dark:shadow-none",
 } as const;
 
 export const radius = {
@@ -72,6 +79,7 @@ export const radius = {
   box: "rounded-xl",
   control: "rounded-md",
   pill: "rounded-full",
+  panel: "rounded-3xl",
 } as const;
 
 export const type = {
@@ -140,4 +148,14 @@ export const recipe = {
   navLink: "rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100",
   faqRow: `rounded-xl border ${palette.borderStrong} ${palette.surface} px-5 py-4`,
   ctaPanel: `${radius.card} ${palette.ctaSoft} px-8 py-12 text-center`,
+  ctaPanelBig: `${radius.panel} ${palette.ctaSoft} px-8 py-16 text-center sm:px-16`,
+
+  // Landing (FlexFolio-inspired) recipes — landing only; nothing shared with the app.
+  eyebrow: `inline-flex items-center gap-2 ${radius.pill} ${palette.ctaSoft} px-3 py-1 ${type.caps} ${palette.ctaText}`,
+  btnHero: `inline-flex items-center justify-center ${radius.pill} ${palette.cta} px-7 py-3 text-base font-semibold ${palette.textInverse} transition-colors ${palette.ctaHover} focus:outline-none ${palette.ctaRing}`,
+  btnHeroGhost: `inline-flex items-center justify-center ${radius.pill} border ${palette.borderStrong} ${palette.surface} px-7 py-3 text-base font-semibold text-gray-800 transition-colors ${palette.surfaceHover} dark:text-gray-100`,
+  iconTile: `flex h-11 w-11 items-center justify-center ${radius.pill} ${palette.tileIndigo}`,
+  stepChip: `flex h-10 w-10 items-center justify-center ${radius.pill} ${palette.ctaSoft} font-display text-base font-semibold ${palette.ctaText}`,
+  surfaceCard: `${radius.panel} border ${palette.border} ${palette.surface} shadow-sm`,
+  mockPanel: `${radius.panel} ${palette.surface} ${palette.ringInset} ${palette.shadowPanel} p-6 sm:p-10`,
 } as const;

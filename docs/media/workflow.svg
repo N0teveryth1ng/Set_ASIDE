@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 820" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 1320" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0 0L10 5L0 10z" fill="#8B93A7"/>
@@ -8,8 +8,8 @@
     </pattern>
   </defs>
 
-  <rect width="1360" height="820" fill="#161A22"/>
-  <rect width="1360" height="820" fill="url(#dots)"/>
+  <rect width="1360" height="1320" fill="#161A22"/>
+  <rect width="1360" height="1320" fill="url(#dots)"/>
 
   <text x="60" y="58" font-size="26" font-weight="700" fill="#F3F4F6">Set-Aside — how money flows</text>
   <text x="60" y="84" font-size="14.5" fill="#9CA3AF">The journey on top, what runs it underneath.</text>
@@ -102,5 +102,43 @@
   <text x="120" y="706" font-size="15.5" font-weight="700" fill="#E5E7EB">“Do you have money? Is the tax set aside?”</text>
   <text x="120" y="730" font-size="13" fill="#9CA3AF">Sign up with a magic link, pick a preset, and the dashboard answers it in one screen — trendline, not a grid.</text>
 
-  <text x="60" y="792" font-size="11.5" fill="#6B7280">Set-Aside · docs/media/workflow.svg</text>
+  <rect x="60" y="818" width="620" height="30" rx="6" fill="#10131A" stroke="#2B3346"/>
+  <text x="76" y="838" font-size="13.5" font-weight="600" fill="#818CF8">PHASE 3 · THE AGENT LAYER</text>
+
+  <path d="M680 958 L680 986" stroke="#8B93A7" stroke-width="2" fill="none"/>
+  <path d="M330 986 L1030 986" stroke="#8B93A7" stroke-width="2" fill="none"/>
+  <path d="M330 986 L330 1004" stroke="#8B93A7" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <path d="M1030 986 L1030 1004" stroke="#8B93A7" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+
+  <rect x="420" y="866" width="520" height="92" rx="12" fill="#4F46E5" stroke="#6D63F2" stroke-width="1.5"/>
+  <text x="680" y="900" font-size="16" font-weight="700" fill="#EEF2FF" text-anchor="middle">Main orchestrator</text>
+  <text x="680" y="924" font-size="12.5" fill="#C7C7FF" text-anchor="middle">You give the order. It delegates, verifies, and reports back.</text>
+  <text x="680" y="943" font-size="11" fill="#A5B4FC" text-anchor="middle">Nothing merges or publishes without your approval.</text>
+
+  <rect x="60" y="1010" width="540" height="200" rx="12" fill="#1C2230" stroke="#4F46E5" stroke-width="1.5"/>
+  <circle cx="92" cy="1042" r="13" fill="#4F46E5"/>
+  <text x="92" y="1047" font-size="13" font-weight="700" fill="#EEF2FF" text-anchor="middle">1</text>
+  <text x="116" y="1048" font-size="15" font-weight="700" fill="#E5E7EB">Coding sub-agent</text>
+  <text x="84" y="1080" font-size="12.5" fill="#9CA3AF">Builds features, fixes bugs, refactors this repo.</text>
+  <text x="84" y="1099" font-size="12.5" fill="#9CA3AF">Follows lib/tokens.ts and ships every dark-mode pair.</text>
+  <text x="84" y="1118" font-size="12.5" fill="#9CA3AF">Proves it: build, tests, and a real browser screenshot.</text>
+  <rect x="76" y="1142" width="508" height="52" rx="8" fill="#10131A" stroke="#2B3346"/>
+  <text x="90" y="1164" font-size="11.5" fill="#9CA3AF">edit: allow · bash: ask</text>
+  <text x="90" y="1184" font-size="11.5" fill="#9CA3AF">Commits and pushes only when you tell it to.</text>
+
+  <rect x="760" y="1010" width="540" height="200" rx="12" fill="#1C2230" stroke="#10B981" stroke-width="1.5"/>
+  <circle cx="792" cy="1042" r="13" fill="#10B981"/>
+  <text x="792" y="1047" font-size="13" font-weight="700" fill="#0B1220" text-anchor="middle">2</text>
+  <text x="816" y="1048" font-size="15" font-weight="700" fill="#E5E7EB">Marketing sub-agent</text>
+  <text x="784" y="1080" font-size="12.5" fill="#9CA3AF">Reads Reddit, X, Hacker News, Product Hunt and</text>
+  <text x="784" y="1099" font-size="12.5" fill="#9CA3AF">competitors live — every claim dated and linked.</text>
+  <text x="784" y="1118" font-size="12.5" fill="#9CA3AF">Returns pulse, trends, positioning, hooks, gaps.</text>
+  <rect x="776" y="1142" width="508" height="52" rx="8" fill="#10131A" stroke="#2B3346"/>
+  <text x="790" y="1164" font-size="11.5" fill="#9CA3AF">edit: deny · bash: deny · read-only</text>
+  <text x="790" y="1184" font-size="11.5" fill="#9CA3AF">Researches and drafts. Never posts without approval.</text>
+
+  <rect x="60" y="1240" width="1240" height="46" rx="10" fill="#10131A" stroke="#2B3346" stroke-dasharray="6,5"/>
+  <text x="80" y="1269" font-size="12.5" fill="#9CA3AF">The marketing agent reads the same product facts the code does, so it never proposes a claim the app can't back.</text>
+
+  <text x="60" y="1312" font-size="11.5" fill="#6B7280">Set-Aside · docs/media/workflow.svg</text>
 </svg>

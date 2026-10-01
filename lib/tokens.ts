@@ -8,10 +8,10 @@
 //   - Semantics: `gain` = emerald (money in / positive net), `loss` = red
 //     (money out / negative net), `warn` = amber (review / not final),
 //     `canvas` = pale page background, `surface` = white cards.
-//   - `cta` = the single accent (FlexFolio orange). Used sparingly: primary
-//     CTAs, active/focus states, and nothing else decorative.
-//   - "Ink" is the near-black (#1E0D01) used for hero/primary pill buttons and
-//     secondary surfaces. The only hex values in the app live in this file.
+//   - `cta` = the single accent (indigo #4F46E5 — the brand color). Used
+//     sparingly: primary CTAs, active/focus states, and nothing else decorative.
+//   - "Ink" is the near-black used for hero/primary pill buttons and secondary
+//     surfaces. The only hex values in the app live in this file.
 //   - Every value ships a `dark:` pair so the theme toggle keeps working.
 
 export const palette = {
@@ -24,15 +24,15 @@ export const palette = {
   divide: "divide-gray-100 dark:divide-gray-800",
   divideStrong: "divide-gray-200 dark:divide-gray-800",
 
-  ink: "bg-[#1E0D01] dark:bg-gray-800",
-  inkHover: "hover:bg-[#3B1F0B] dark:hover:bg-gray-700",
-  inkSoft: "bg-[#F5F5F5] dark:bg-gray-800",
-  inkSoftHover: "bg-[#FAF4F0] dark:hover:bg-gray-700",
-  inkFaint: "bg-[#E2E8F3] dark:bg-gray-500",
-  inkOverlay: "bg-[#1E0D01]/40 dark:bg-black/40",
-  surfaceHover: "hover:bg-[#F5F5F5] dark:hover:bg-gray-800/70",
+  ink: "bg-gray-900 dark:bg-gray-800",
+  inkHover: "hover:bg-gray-700 dark:hover:bg-gray-600",
+  inkSoft: "bg-gray-100 dark:bg-gray-800",
+  inkSoftHover: "bg-gray-200 dark:hover:bg-gray-700",
+  inkFaint: "bg-gray-400 dark:bg-gray-500",
+  inkOverlay: "bg-gray-900/40 dark:bg-black/40",
+  surfaceHover: "hover:bg-gray-50 dark:hover:bg-gray-800/70",
 
-  text: "text-[#1E0D01] dark:text-gray-100",
+  text: "text-gray-900 dark:text-gray-100",
   textMuted: "text-gray-700 dark:text-gray-300",
   textSubtle: "text-gray-600 dark:text-gray-400",
   textFaint: "text-gray-500 dark:text-gray-400",
@@ -56,27 +56,25 @@ export const palette = {
 
   dangerSolid: "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10",
 
-  // Single accent — FlexFolio orange. All hex values in the codebase live here.
-  cta: "bg-[#F97518]",
-  ctaHover: "hover:bg-[#E65F00]",
-  ctaSoft: "bg-[#FFF1E7] dark:bg-[#F97518]/10",
-  ctaSoftHover: "hover:bg-[#FFE9D8] dark:hover:bg-[#F97518]/10",
-  ctaText: "text-[#E65F00] dark:text-[#FDB591]",
-  ctaTextHover: "hover:text-[#C25000] dark:hover:text-[#F97518]",
-  ctaBorder: "border-[#F97518]",
-  ctaRing: "focus:ring-[#F97518]/30",
-  ctaBar: "bg-[#F97518]/80",
+  // Single accent — indigo (brand color, restored). All hex values live here.
+  cta: "bg-[#4F46E5]",
+  ctaHover: "hover:bg-[#4338CA]",
+  ctaSoft: "bg-[#EEF2FF] dark:bg-[#EEF2FF]/10",
+  ctaSoftHover: "hover:bg-[#EEF2FF] dark:hover:bg-[#EEF2FF]/10",
+  ctaText: "text-[#4F46E5] dark:text-[#A5B4FC]",
+  ctaTextHover: "hover:text-[#4338CA] dark:hover:text-[#818CF8]",
+  ctaBorder: "border-[#4F46E5]",
+  ctaRing: "focus:ring-[#4F46E5]/30",
+  ctaBar: "bg-[#4F46E5]/80",
 
-  // Accent word highlights used in the hero (FlexFolio colors key headline words).
-  accentLime: "text-[#6FBF00] dark:text-[#A5FF00]",
-  accentPink: "text-[#FE83F1] dark:text-[#FE83F2]",
+  
 
-  // Landing-specific surfaces — light-first warm paper + white cards.
-  heroTint: "bg-[#F6F1EC] dark:bg-gray-900/60",
-  tileAccent: "bg-[#FA8484]/15 text-[#E65F00] dark:bg-[#FA8484]/10 dark:text-[#FDB591]",
-  ringInset: "ring-1 ring-inset ring-[#1E0D01]/5 dark:ring-white/10",
+  // Landing-specific surfaces — light-first, neutral paper + white cards.
+  heroTint: "bg-[#F6F7FB] dark:bg-gray-900/60",
+  tileAccent: "bg-[#EEF2FF] text-[#4F46E5] dark:bg-[#EEF2FF]/10 dark:text-[#A5B4FC]",
+  ringInset: "ring-1 ring-inset ring-gray-900/5 dark:ring-white/10",
   shadowPanel:
-    "shadow-[0_1px_2px_rgba(30,13,1,0.04),0_28px_56px_-18px_rgba(30,13,1,0.18)] dark:shadow-none",
+    "shadow-[0_1px_2px_rgba(16,24,40,0.05),0_28px_56px_-18px_rgba(79,70,229,0.16)] dark:shadow-none",
 } as const;
 
 export const radius = {
@@ -158,7 +156,7 @@ export const recipe = {
 
   // Landing (FlexFolio) recipes — landing only; nothing shared with the app.
   eyebrow: `inline-flex items-center gap-2 ${radius.pill} ${palette.ctaSoft} px-3 py-1 ${type.caps} ${palette.ctaText}`,
-  btnHero: `inline-flex items-center justify-center ${radius.pill} ${palette.ink} px-7 py-3.5 text-base font-semibold ${palette.textInverse} transition-colors ${palette.inkHover} focus:outline-none focus:ring-[#1E0D01]/25`,
+  btnHero: `inline-flex items-center justify-center ${radius.pill} ${palette.ink} px-7 py-3.5 text-base font-semibold ${palette.textInverse} transition-colors ${palette.inkHover} focus:outline-none ${palette.ctaRing}`,
   btnHeroGhost: `inline-flex items-center justify-center ${radius.pill} border ${palette.borderStrong} ${palette.surface} px-7 py-3.5 text-base font-semibold ${palette.text} transition-colors ${palette.surfaceHover}`,
   iconTile: `flex h-11 w-11 items-center justify-center ${radius.pill} ${palette.tileAccent}`,
   stepChip: `flex h-10 w-10 items-center justify-center ${radius.pill} ${palette.ctaSoft} font-display text-base font-semibold ${palette.ctaText}`,

@@ -148,8 +148,8 @@ export default function Home() {
             <Eyebrow>A calm money dashboard for the self-employed</Eyebrow>
             <h1 className={`mx-auto mt-6 max-w-3xl ${type.displayHero} ${palette.text}`}>
               Do you have <span className={palette.ctaText}>money</span>?
-              <br className="hidden sm:block" /> Is the tax{" "}
-              <span className={palette.accentLime}>set aside</span>?
+              <br className="hidden sm:block" /> Is the{" "}
+              <span className={palette.ctaText}>tax set aside</span>?
             </h1>
             <p className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed ${palette.textSubtle}`}>
               Set-Aside is a money dashboard for the self-employed. You record

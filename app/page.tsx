@@ -6,80 +6,85 @@ import { palette, recipe, space, type } from "@/lib/tokens";
 
 const FEATURES = [
   {
-    title: "Net Position, at a glance",
-    body: "Money in and money out, summed into one number you can trust — with a trendline, not a grid.",
+    title: "One number, what is actually yours",
+    body: "Money in minus money out, on one screen. This is what you can spend without touching the tax you owe.",
     icon: Wallet,
   },
   {
-    title: "Tax set-aside, separated automatically",
-    body: "Pick a flat percentage (23% is a common default); every positive period sets that share aside on its own. A savings habit, not a tax calculation.",
+    title: "The set-aside moves on its own",
+    body: "You pick a percentage and every good month separates that share. It does the part you forget to do.",
     icon: PiggyBank,
   },
   {
-    title: "Private by construction",
-    body: "Real accounts on Supabase Postgres — no shared documents, no browser-only data. Row-level security guards every owned row.",
+    title: "It never asks for your bank",
+    body: "No login, no connection, no account at any bank you use. You record the money yourself and nothing is taken from you.",
     icon: ShieldCheck,
   },
 ];
 
 const TRUST = [
   {
-    title: "Real data, tied to your account",
-    body: "Your numbers live in a real database behind your login — Supabase Postgres, not a browser-only tab. They are never shared and never sold.",
+    title: "Your rows belong to you alone",
+    body: "Every record is tied to your account, and no one else can reach it. We do not sell it. We do not share it.",
     icon: Database,
   },
   {
-    title: "A set-aside you set, not a tax engine",
-    body: "It is a flat percentage you choose and change anytime, separated on every positive period. Set-Aside is not a bracket or jurisdiction calculation — it never claims to be.",
+    title: "It moves your percentage, nothing more",
+    body: "You choose the number and you can change it whenever you want. Set-Aside does not work out your tax bill and does not pretend to.",
     icon: Percent,
   },
   {
-    title: "Import happens once",
-    body: "Upload a spreadsheet and it is converted into normal entries. The app then reads its own database only and never re-opens or syncs the original file.",
+    title: "The spreadsheet import happens once",
+    body: "Upload it and it turns into normal records. After that Set-Aside reads its own database and never reopens the file.",
     icon: FileUp,
   },
 ];
 
 const STEPS = [
   {
-    title: "Sign up in seconds",
-    body: "A magic link is all it takes. No company setup, no accounting jargon.",
+    title: "Sign in with a magic link",
+    body: "An email link gets you in. There is no password to forget or leak.",
   },
   {
-    title: "Pick your money life",
-    body: "Freelance, business, personal, or creator — categories seed themselves.",
+    title: "Pick your kind of work",
+    body: "Freelance, business, personal or creator. Your categories fill themselves in.",
   },
   {
-    title: "Start recording",
-    body: "Add an entry in plain language or import months of history. Everything updates itself.",
+    title: "Add money, or bring what you already have",
+    body: "Type one entry, or import months of history in a single go.",
   },
 ];
 
 const FAQ = [
   {
-    question: "Do I need an accountant to use Set-Aside?",
+    question: "Does Set-Aside connect to my bank?",
     answer:
-      "No. Set-Aside is built for the self-employed who want one honest number without building spreadsheets.",
+      "No, and there is no code in the product that could. There is no bank login, no Plaid, no open banking connection. You type your entries in or import a spreadsheet once. Nothing is pulled from your accounts by us.",
   },
   {
-    question: "How is the tax set-aside calculated?",
+    question: "How is the set-aside worked out?",
     answer:
-      "It isn't calculated like a tax return. You choose a flat percentage (23% is a common default), and Set-Aside separates that share on every positive period so you always know what to set aside. It's a savings discipline, not a bracket or jurisdiction calculation.",
+      "You pick a percentage. Twenty-three percent is a common starting point. On every period where money in beats money out, that share is separated for you. The percentage is yours to change at any time. Set-Aside does not know your bracket and does not work out your tax bill.",
   },
   {
-    question: "Is my financial data private?",
+    question: "Do I need an accountant to use this?",
     answer:
-      "Your data lives behind your account in Supabase Postgres, protected by row-level security, and it is never shared or sold. There are no shared documents.",
+      "To keep a spreadsheet you do not. If you have a complicated situation, an accountant is still the right person and we will say so. This is a place to see the number, not a replacement for advice.",
   },
   {
-    question: "What if a month has more out than in?",
+    question: "What happens in a month where I spend more than I earn?",
     answer:
-      "Your Net Position reflects the real number, and the set-aside only accrues on positive periods. Nothing is hidden.",
+      "The number turns red and stays honest. The set-aside only grows on positive periods, because there is no profit in a losing month to set aside from.",
   },
   {
-    question: "Can I change the tax rate or categories later?",
+    question: "Where is my data, and can I get it out?",
     answer:
-      "Anytime, in Settings. Categories, rate, currency, and which cards you see are all yours to adjust.",
+      "Behind your login, in a real database, where only your account can reach it. You can download every entry as CSV from Settings at any time, in any date range. Leaving should never be harder than joining.",
+  },
+  {
+    question: "Can I change the percentage or my categories later?",
+    answer:
+      "Any time, in Settings. Percentage, categories, currency and which cards you see are all yours to adjust.",
   },
 ];
 
@@ -137,25 +142,38 @@ function Trendline({ className = "" }: { className?: string }) {
   );
 }
 
+const FAQ_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.answer },
+  })),
+};
+
 export default function Home() {
   return (
     <main className={`${recipe.page} ${palette.canvas}`}>
       <AuthCtaProvider>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSONLD) }}
+        />
         <LandingNav />
 
         <section className={`border-b ${palette.border} ${palette.heroTint}`}>
           <div className={`${space.containerLg} pb-16 pt-16 text-center sm:pb-20 sm:pt-20`}>
-            <Eyebrow>A calm money dashboard for the self-employed</Eyebrow>
+            <Eyebrow>For freelancers and contractors</Eyebrow>
             <h1 className={`mx-auto mt-6 max-w-3xl ${type.displayHero} ${palette.text}`}>
-              Do you have <span className={palette.ctaText}>money</span>?
-              <br className="hidden sm:block" /> Is the{" "}
-              <span className={palette.ctaText}>tax set aside</span>?
+              Know what is <span className={palette.ctaText}>yours</span>, and
+              what is the <span className={palette.ctaText}>tax you owe</span>.
             </h1>
             <p className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed ${palette.textSubtle}`}>
-              Set-Aside is a money dashboard for the self-employed. You record
-              money in and money out; it shows your Net Position, separates a
-              set-aside for you, and keeps a clean category breakdown —
-              trendline, not a grid.
+              Set-Aside is for freelancers whose income changes month to month.
+              Record money in and out. It tells you what you can actually spend,
+              and moves the tax share aside the day you get paid. It never asks
+              for your bank login.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
               <SignupCta variant="hero" />
@@ -201,7 +219,7 @@ export default function Home() {
               </div>
             </div>
             <p className={`mt-4 text-xs ${palette.textGhost}`}>
-              Illustrative figures — your numbers live behind a login.
+              Illustrative figures. Your own numbers sit behind your login.
             </p>
           </div>
         </section>
@@ -210,8 +228,8 @@ export default function Home() {
           <div className={space.containerLg}>
             <SectionHeading
               eyebrow="Straight answers"
-              title="How Set-Aside really works"
-              copy="A few things, said plainly — so you know exactly what you're signing up for."
+              title="What it does, and what it refuses to do"
+              copy="So you know what you are signing up for before you do."
             />
             <div className="mt-12 grid gap-6 sm:grid-cols-3">
               {TRUST.map((item) => (
@@ -231,7 +249,7 @@ export default function Home() {
 
         <section id="features" className="scroll-mt-24 pb-20 sm:pb-24">
           <div className={space.containerLg}>
-            <SectionHeading eyebrow="Why Set-Aside" title="Built around the three numbers you should care about" />
+            <SectionHeading eyebrow="How it works" title="Two numbers, and they disagree more than you think" />
             <div className="mt-12 grid gap-6 sm:grid-cols-3">
               {FEATURES.map((feature) => (
                 <div key={feature.title} className={`${recipe.surfaceCard} p-7`}>
@@ -250,7 +268,7 @@ export default function Home() {
 
         <section id="product" className="scroll-mt-24 pb-20 sm:pb-24">
           <div className={space.containerLg}>
-            <SectionHeading eyebrow="The dashboard" title="One screen, always up to date" />
+            <SectionHeading eyebrow="The dashboard" title="One screen, and it is always current" />
             <div className="mt-12 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
               <div className={`${recipe.surfaceCard} p-6 sm:p-8`}>
                 <div className="flex items-center justify-between">
@@ -317,7 +335,7 @@ export default function Home() {
 
         <section id="how-it-works" className="scroll-mt-24 pb-20 sm:pb-24">
           <div className={space.containerLg}>
-            <SectionHeading eyebrow="Getting started" title="Three steps from signup to your numbers" />
+            <SectionHeading eyebrow="Getting started" title="Three steps and you have numbers" />
             <div className="mt-12 grid gap-10 sm:grid-cols-3">
               {STEPS.map((step, i) => (
                 <div key={step.title} className="text-center">
@@ -334,7 +352,7 @@ export default function Home() {
 
         <section id="faq" className="scroll-mt-24 pb-20 sm:pb-24">
           <div className={space.containerLg}>
-            <SectionHeading eyebrow="FAQ" title="Questions, answered" />
+            <SectionHeading eyebrow="FAQ" title="Questions worth asking" />
             <div className="mt-12 space-y-3">
               {FAQ.map((item) => (
                 <details key={item.question} className={recipe.faqRow}>
@@ -354,11 +372,12 @@ export default function Home() {
           <div className={`${space.containerLg}`}>
             <div className={recipe.ctaPanelBig}>
             <h2 className={`mx-auto max-w-lg font-display text-3xl font-semibold tracking-[-0.02em] ${palette.text}`}>
-              Your money life, finally in{" "}
-              <span className={palette.ctaText}>one number</span>.
+              Find out what is{" "}
+              <span className={palette.ctaText}>yours</span>.
             </h2>
             <p className={`mx-auto mt-4 max-w-md text-sm ${palette.textMuted}`}>
-              Free to try. A magic link is all it takes to see your Net Position.
+              A magic link gets you in. Your first entry takes about ten
+              seconds, and we never ask for a bank login.
             </p>
             <div className="mt-8">
               <SignupCta variant="hero" />
@@ -376,8 +395,9 @@ export default function Home() {
                   Set-Aside
                 </p>
                 <p className={`mt-2 max-w-xs text-sm leading-relaxed ${palette.textSubtle}`}>
-                  A calm money dashboard for the self-employed. Your data lives in a real
-                  database behind your account — never shared, never sold.
+                  A money dashboard for freelancers. Your records sit behind your own
+                  login where no one else can read them, and you can take
+                  them out as CSV whenever you want.
                 </p>
               </div>
               <div>
@@ -387,6 +407,7 @@ export default function Home() {
                     { href: "#features", label: "Features" },
                     { href: "#how-it-works", label: "How it works" },
                     { href: "#faq", label: "FAQ" },
+                    { href: "/works-on-every-device", label: "How your data is stored" },
                   ].map((item) => (
                     <li key={item.href}>
                       <a href={item.href} className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">

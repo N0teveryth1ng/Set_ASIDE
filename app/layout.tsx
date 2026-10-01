@@ -17,10 +17,45 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Set-Aside",
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://set-aside-nine.vercel.app";
+
+const SOFTWARE_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Set-Aside",
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "Web",
   description:
-    "Set-Aside is a money dashboard for the self-employed: categories, a tax set-aside, and a Net Position you can actually trust.",
+    "A money dashboard for freelancers with uneven income. Shows what you can actually spend and moves a tax set-aside aside on every positive period.",
+  featureList: [
+    "Net Position on one screen",
+    "Tax set-aside at a percentage you choose",
+    "One-time spreadsheet import",
+    "CSV export of every entry",
+  ],
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: "Set-Aside: what is yours after tax, for freelancers",
+  description:
+    "A money dashboard for freelancers with uneven income. See what you can actually spend and move the tax share aside the day you get paid. Never connects to your bank.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Set-Aside",
+    title: "Set-Aside: what is yours after tax, for freelancers",
+    description:
+      "See what you can actually spend, and move the tax share aside the day you get paid. No bank login, ever.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Set-Aside: what is yours after tax, for freelancers",
+    description:
+      "See what you can actually spend, and move the tax share aside the day you get paid. No bank login, ever.",
+  },
+  robots: { index: true, follow: true },
 };
 
 const THEME_SCRIPT = `try{var t=localStorage.getItem("set-aside-theme");var d=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.documentElement.classList.add("dark")}catch(e){}`;
@@ -46,6 +81,10 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: AUTH_SCRIPT }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(SOFTWARE_JSONLD) }}
+        />
         {/* Umami analytics: loaded once, in the root layout. Umami's tracker
             patches the History API (pushState/replaceState/popstate) and sends
             a pageview on every client-side route change, so in-app navigation
